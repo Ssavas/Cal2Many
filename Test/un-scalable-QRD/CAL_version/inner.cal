@@ -1,0 +1,16 @@
+
+
+
+
+
+actor inner () in1, in2 ==> out1, out2 :
+	float r := 0.0;
+	
+	action in1:[c,s], in2:[x_in] ==> out1:[c,s], out2:[x_out]
+	var
+		float x_out
+	do
+		x_out := c * x_in - s * r;
+		r := s * x_in + c * r;
+	end
+end

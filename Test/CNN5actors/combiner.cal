@@ -1,0 +1,26 @@
+/*
+ * The actor to accumulate the R, G and B results from the conv actors
+ * 
+ * Author: Süleyman Savas
+ * 2019-02-20
+ * Halmstad University
+ * 
+ */
+ 
+// package cnnlayer;
+ 
+ 
+ actor combiner() float R_in, float G_in, float B_in ==> /*float ResultOut*/:
+ 	int counter := 0;
+ 	accumulate : action R_in:[RValue], G_in:[GValue], B_in:[BValue]  ==> //ResultOut:[result]
+	guard counter < 802816
+ 	var 
+ 		float result
+	do
+ 		result := RValue + GValue + BValue;
+ 		counter := counter + 1;
+ 		//println('counter: ' + counter);
+ 	end
+ 	
+ 
+ end

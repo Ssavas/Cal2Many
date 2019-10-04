@@ -1,0 +1,225 @@
+/*
+ * 2015-12-16 
+ * 
+ * Süleyman Savas
+ * 
+ * Boundary cells - actually includes both type of cells
+ * 
+ */
+ 
+//package qrd;
+
+
+ actor singleQRD (/*int SUB_ROW_SIZE, int SUB_COL_SIZE*/)  ==> :
+	
+	int ROW_SIZE = 16;
+	int COL_SIZE = 16;
+	List( type:float, size = ROW_SIZE * COL_SIZE ) r;
+	//List( type:float, size = SUB_COL_SIZE) c;
+	//List( type:float, size = SUB_COL_SIZE) s;
+	List( type:float, size = ROW_SIZE + 1) x_in;
+	//List( type:float, size = 2) x_out;//SUB_COL_SIZE) x_out;
+	float c;
+	float s;
+	
+	List( type:float, size = ROW_SIZE * COL_SIZE ) inputMatrix := [
+		5.124575, 7.898948, 7.946213, 3.592056, 6.081988, 7.166724, 7.788865,9.798719,	4.258254, 1.054377, 7.652938, 3.552302, 2.828004, 1.762015, 2.638748, 8.069129,
+		2.522771, 1.012173, 8.776333, 6.716550, 4.709401, 1.210326, 1.280568, 3.150382,	9.152067, 2.220713, 4.314055, 2.801475, 0.355802, 4.751442, 2.452192, 8.104572, 
+		8.535061, 1.283802, 0.308171, 1.881512, 6.372757, 4.749593, 5.185006, 8.183881,	0.145697, 9.572844, 4.968377, 2.484793, 3.972274, 0.722540, 4.236591, 8.985795, 
+		3.747190, 1.811495, 6.834885, 9.154308, 5.894849, 0.924535, 4.470197, 0.745557,	2.168096, 6.291060, 6.742811, 0.373962, 4.722142, 6.529717, 9.824009, 7.356618,
+		6.461459, 9.131959, 7.072122, 0.483971, 1.670396, 8.949241, 4.018287, 3.546607,	8.672633, 0.835284, 1.438314, 5.034810, 6.390177, 3.856355, 2.282590, 2.083286, 
+		9.260374, 6.927009, 4.018142, 0.385422, 1.099953, 3.724873, 9.097155, 9.176734, 6.069993, 8.241838, 9.264992, 1.061532, 3.459950, 2.737167, 2.078934, 3.678259, 
+		6.428624, 0.599322, 6.768367, 8.416201, 2.400816, 6.837505, 0.179495, 4.902166, 7.376048, 9.049492, 7.510052, 1.206717, 5.326238, 2.406306, 4.195184, 9.811339, 
+		8.330168, 8.243491, 5.997973, 8.827311, 5.079985, 6.432596, 3.651846, 9.114349, 1.086232, 7.299483, 4.097865, 8.284714, 0.099244, 9.042177, 1.308067, 3.394185, 
+		6.530458, 2.984305, 6.574254, 5.616988, 9.094666, 5.588702, 5.533086, 7.406141, 4.161861, 0.238815, 9.648564, 6.822000, 0.370360, 4.103983, 8.835959, 5.350417, 
+		6.909482, 7.122869, 4.538856, 0.413352, 0.563682, 8.213211, 3.641620, 3.405092, 1.848284, 4.093572, 8.746218, 8.198015, 4.431138, 8.115096, 3.752868, 9.309067, 
+		4.522346, 4.953636, 6.954018, 4.096635, 1.076255, 2.290696, 4.178736, 1.015898, 5.956050, 5.301290, 3.462898, 9.802859, 9.976361, 8.454410, 2.433835, 3.138024, 
+		6.622229, 8.626863, 4.287552, 5.543465, 5.243287, 7.461806, 2.883427, 3.698015, 4.793037, 1.159368, 1.629081, 2.267589, 0.671444, 9.046292, 4.284649, 2.955473, 
+		4.077998, 8.902470, 5.945147, 3.556053, 8.246637, 4.732425, 0.047543, 5.104174, 6.272343, 6.639598, 9.528616, 1.437121, 6.459073, 0.140771, 9.660500, 8.103308, 
+		7.141063, 7.821795, 4.805562, 5.816616, 8.541925, 0.016668, 2.015325, 4.703988, 5.374593, 0.995246, 5.829943, 5.670019, 8.307987, 6.370590, 9.468715, 1.161778, 
+		7.457226, 0.099300, 7.410219, 0.187684, 1.784756, 1.066501, 8.859654, 6.758221, 9.879946, 3.690862, 4.245235, 3.524249, 2.964446, 4.373680, 2.311288, 2.500651, 
+		4.752189, 0.592439, 2.946092, 0.001511, 6.350062, 6.068312, 2.986027, 0.368879, 3.349494, 5.183024, 7.386629, 0.150104, 9.933439, 1.343407, 0.192133, 6.214067
+	];
+/* 	
+	int k := 0;
+	
+	while k < SUB_COL_SIZE do
+		c[k] := 0.0;
+		s[k] := 0.0;
+		x_in[k] := 0.0;
+		x_out[k] := 0.0;
+		k := k + 1;
+	end
+	
+	k := 0;
+	while k < SUB_ROW_SIZE_ * SUB_COL_SIZE do
+		r[k] := 0.0;		
+	end
+	*/
+ 	int x_in_counter := 0;
+ 	float SquareRoot_ret := 0.0;
+ 	int row_counter := 0;
+ 	int col_counter := 0;
+ 	int inputCounter := 0;
+ 	int outputCounter := 0;
+ 	
+ 	
+//action to read x_in (one for each column)
+	read_x_in: action   ==>  
+	guard x_in_counter < ROW_SIZE && inputCounter < ROW_SIZE * COL_SIZE
+	do
+       println("0");
+		//println("read_x_in");
+		x_in[x_in_counter] := inputMatrix[inputCounter];
+		x_in_counter := x_in_counter + 1; 
+		inputCounter := inputCounter + 1;
+	end
+	
+	read_x_in_done : action ==>
+	guard x_in_counter = ROW_SIZE 
+	do 
+       println("1");
+		x_in_counter := 0;
+		//println("boundary - read_x_in_done"); 
+	end
+	
+	read_x_in_not_done : action ==> 
+	guard outputCounter < ROW_SIZE * COL_SIZE
+	do 
+       println("2");
+		//println("boundary - read_x_in_not_done");
+		//println("r["+outputCounter+"] : "+r[outputCounter]);
+		outputCounter := outputCounter + 1; 
+	end
+	
+// calculate boundary first, then go on with inner cells
+	calculate_boundary_part1 : action ==>
+	guard row_counter < COL_SIZE && x_in[row_counter] = 0.0
+	do 
+		c := 1.0;
+		s := 1.0;
+		col_counter := col_counter + 1;
+	end
+
+	__acc__calculate_boundary_part2 : action ==>
+ 	guard row_counter < COL_SIZE
+ 	var
+ 		float a,
+ 		float b,
+ 		float r_tmp,
+		float sqrt_tmp,
+ 		int index
+ 	do
+ 		//println(" x_in: " + x_in[row_counter] + " r_in: " + r[row_counter * ROW_SIZE + col_counter]);
+ 		 		
+        //println("3");
+ 		//println("boundary - calculate_boundary");
+ 		index := row_counter * ROW_SIZE + col_counter;
+		a     := r[index] * r[index];
+		b     := x_in[col_counter] * x_in[col_counter];
+		sqrt_tmp := a + b;
+		SquareRoot(sqrt_tmp);
+		r_tmp    := SquareRoot_ret;
+		c        := r[index] / r_tmp;
+		s        := x_in[col_counter] / r_tmp;
+		r[index] := r_tmp;
+		//println("c :"+c+" s : "+s+" r_tmp : "+r_tmp);
+
+		//println("r_out: " + r[row_counter * ROW_SIZE + col_counter] + " c_out: " + c + " s_out: " + s);
+
+		col_counter := col_counter + 1;
+		//row_counter := row_counter + 1;
+		//if row_counter = COL_SIZE then
+			//row_counter := 0;
+		//end
+ 	end
+ 	
+ 	row_done : action ==> 
+ 	do 
+        println("4");
+ 		//println("boundary - row_done");
+ 		row_counter := 0;
+ 		col_counter := 0;
+ 	end
+	
+	calculate_inner : action ==>
+	guard col_counter < ROW_SIZE
+	var
+		float tmp,
+		int index
+	do
+       println("5");
+		//println("boundary - calculate_inner");
+		index := row_counter * ROW_SIZE + col_counter;
+		tmp := c * x_in[col_counter] - s * r [index];
+		r[index] := s * x_in[col_counter] + c * r[index];
+		x_in[col_counter] := tmp;
+		
+		col_counter := col_counter + 1;
+
+	end
+	
+	col_done : action ==>
+	guard row_counter < COL_SIZE 
+	do 
+       println("6");
+		//println("boundary - col_done");
+		row_counter := row_counter + 1;
+		col_counter := row_counter;
+	end
+	
+	jump_to_read : action ==>
+	do
+       println("7");
+		col_counter := 0;
+		row_counter := 0;
+	end
+	
+	
+	
+	  // Babylonian method, http://www.codeproject.com/Articles/69941/Best-Square-Root-Method-Algorithm-Function-Precisi sqrt5      
+	procedure SquareRoot(float ns)
+    	var
+    		float i := 0.0,
+    		float x1,
+    		float x2,
+    		int j := 0
+		begin
+			while ((i*i) <= ns)
+			do
+				i := i + 0.1;
+			end
+			
+			x1 := i;
+			
+			while (j < 10)
+			do
+				x2 := ns;
+				x2 := x2 / x1;
+				x2 := x2 + x1;
+				x2 := x2 / 2;
+				x1 := x2;
+				j := j + 1;
+			end   	
+			SquareRoot_ret := x2;
+		end
+		
+
+	schedule fsm state1 :
+		state1 (read_x_in)							--> state1;
+		state1 (read_x_in_not_done)					--> state1;
+		state1 (read_x_in_done)						--> state2;
+		state2 (row_done)							--> state1;
+		state2 (calculate_boundary_part1)			--> state3;
+		state2 (_acc_calculate_boundary_part2)	--> state3;
+		state3 (calculate_inner)					--> state3;
+		state3 (col_done)							--> state2;
+	end
+	
+	priority
+		calculate_boundary_part1 > _acc_calculate_boundary_part2 > row_done;
+		calculate_inner > col_done; 
+		read_x_in > read_x_in_done > read_x_in_not_done;
+	end
+	
+end

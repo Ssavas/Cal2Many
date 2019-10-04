@@ -1,0 +1,212 @@
+/*
+ * The actor that performs correlation
+ * in autufocus criterion calculation
+ * using complex number structure
+ * Süleyman Savas
+ * 2018-11-21
+ * CERES, ITE, HH
+ */
+ 
+ 
+//package autofocus;
+ 
+actor correlation_actor () int(size = 64) BA1, int(size = 64) BB1, int(size = 64) BA2, int(size = 64) BB2, int(size = 64) BA3, int(size = 64) BB3, 
+int(size = 64) BA4, int(size = 64) BB4, int(size = 64) BA5, int(size = 64) BB5, int(size = 64) BA6, int(size = 64) BB6 ==> :
+	
+	int NOF_PIXELS_KERNEL    = 36;
+	int NOF_PIXELS           = 216;
+	float SquareRoot_ret;
+	float total_sum         := 0.0;
+	int correlation_counter := 0;
+	int (size = 64) correlation_input1;
+	int (size = 64) correlation_input2;
+	float C_mag_ret;
+	int iterationCounter    := 0;
+	
+	List(type : int (size = 64), size = NOF_PIXELS_KERNEL / 4) complex_ba;
+	List(type : int (size = 64), size = NOF_PIXELS_KERNEL / 4) complex_bb;	
+	
+	
+	readInputs1 : action BA1: [ba] repeat 9, BB1: [bb] repeat 9 ==>
+	guard iterationCounter < NOF_PIXELS_KERNEL / 6
+	var
+		int i
+	do 
+		i := 0;
+		while i < 9 do
+			complex_ba[i] := ba[i];
+			complex_bb[i] := bb[i];
+			i := i +1;
+		end
+		iterationCounter := iterationCounter + 1;
+	end
+	
+	readInputs2 : action BA2: [ba] repeat 9, BB2: [bb] repeat 9 ==>
+	//guard iterationCounter < NOF_PIXELS_KERNEL / 6
+	var
+		int i
+	do 
+		i := 0;
+		while i < 9 do
+			complex_ba[i] := ba[i];
+			complex_bb[i] := bb[i];
+			i := i +1;
+		end
+		iterationCounter := iterationCounter + 1;
+	end
+	
+	readInputs3 : action BA3: [ba] repeat 9, BB3: [bb] repeat 9 ==>
+	//guard iterationCounter < NOF_PIXELS_KERNEL / 6
+	var
+		int i
+	do 
+		i := 0;
+		while i < 9 do
+			complex_ba[i] := ba[i];
+			complex_bb[i] := bb[i];
+			i := i +1;
+		end
+		iterationCounter := iterationCounter + 1;
+	end
+	
+	readInputs4 : action BA4: [ba] repeat 9, BB4: [bb] repeat 9 ==>
+	//guard iterationCounter < NOF_PIXELS_KERNEL / 6
+	var
+		int i
+	do 
+		i := 0;
+		while i < 9 do
+			complex_ba[i] := ba[i];
+			complex_bb[i] := bb[i];
+			i := i +1;
+		end
+		iterationCounter := iterationCounter + 1;
+	end
+	
+	readInputs5 : action BA5: [ba] repeat 9, BB5: [bb] repeat 9 ==>
+	//guard iterationCounter < NOF_PIXELS_KERNEL / 6
+	var
+		int i
+	do 
+		i := 0;
+		while i < 9 do
+			complex_ba[i] := ba[i];
+			complex_bb[i] := bb[i];
+			i := i +1;
+		end
+		iterationCounter := iterationCounter + 1;
+	end
+	
+	readInputs6 : action BA6: [ba] repeat 9, BB6: [bb] repeat 9 ==>
+	//guard iterationCounter < NOF_PIXELS_KERNEL / 6
+	var
+		int i
+	do 
+		i := 0;
+		while i < 9 do
+			complex_ba[i] := ba[i];
+			complex_bb[i] := bb[i];
+			i := i +1;
+		end
+		iterationCounter := iterationCounter + 1;
+	end
+	
+	__acc__correlation : action ==>
+	var
+		float tmp1,
+		float tmp2,
+		float tmp3,
+		float tmp4,
+		float tmp5
+	do
+		C_mag(correlation_input1);
+		tmp1      := C_mag_ret;
+		C_mag(correlation_input2);
+		tmp2      := C_mag_ret;
+		tmp3      := tmp1 * tmp1;
+		tmp4      := tmp2 * tmp2;
+		tmp5      := tmp3 * tmp4;
+		total_sum := total_sum + tmp5;
+		//correlation_output := tmp5;
+	end
+
+	set_correlation_inputs : action ==>
+	guard correlation_counter < 9
+	do
+		correlation_input1 := complex_ba[correlation_counter];
+		correlation_input2 := complex_bb[correlation_counter];
+		correlation_counter := correlation_counter + 1;
+	end
+
+	correlation_done1 : action ==> 
+	guard iterationCounter = 1 
+	do 
+		correlation_counter := 0;
+		total_sum           := 0;
+	end
+	
+	correlation_done2 : action ==> 
+	guard iterationCounter = 2 
+	do 
+		correlation_counter := 0;
+		total_sum           := 0;
+	end
+	
+	correlation_done3 : action ==> 
+	guard iterationCounter = 3 
+	do 
+		correlation_counter := 0;
+		total_sum           := 0;
+	end
+	
+	correlation_done4 : action ==> 
+	guard iterationCounter = 4 
+	do 
+		correlation_counter := 0;
+		total_sum           := 0;
+	end
+	
+	correlation_done5 : action ==> 
+	guard iterationCounter = 5 
+	do 
+		correlation_counter := 0;
+		total_sum           := 0;
+	end
+	
+	correlation_done6 : action ==> 
+	guard iterationCounter = 6 
+	do 
+		println("correlation actor DONE");
+		correlation_counter := 0;
+		total_sum           := 0;
+	end
+	
+	procedure C_mag(int (size = 64) ns)
+	begin  	
+		C_mag_ret := 1;
+	end 
+	
+	
+	schedule fsm state1:
+		state1 (readInputs1)			--> state2;
+		state2 (set_correlation_inputs)	--> state3;
+		state2 (correlation_done1)		--> state4;
+		state2 (correlation_done2)		--> state5;
+		state2 (correlation_done3)		--> state6;
+		state2 (correlation_done4)		--> state7;
+		state2 (correlation_done5)		--> state8;
+		state2 (correlation_done6)		--> state1;
+		state3 (__acc__correlation)		--> state2;
+		state4 (readInputs2)			--> state2;
+		state5 (readInputs3)			--> state2;
+		state6 (readInputs4)			--> state2;
+		state7 (readInputs5)			--> state2;
+		state8 (readInputs6)			--> state2;
+	end
+	
+	priority
+		set_correlation_inputs > correlation_done1 > correlation_done2 > correlation_done3 > correlation_done4 > correlation_done5 > correlation_done6;
+		
+	end
+	
+end 

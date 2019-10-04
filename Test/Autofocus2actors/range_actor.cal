@@ -1,0 +1,326 @@
+/*
+ * The actor that applies range interpolation in autufocus criterion calculation
+ * using complex number structure
+ * Süleyman Savas
+ * 2018-08-22
+ * CERES, ITE, HH
+ */
+ 
+ 
+// package autofocus;
+ 
+ actor range_actor () ==> int (size = 64) RA, int (size = 64) RB:
+ 
+ 
+	int NOF_PIXELS_KERNEL = 36;
+	int NOF_PIXELS        = 216;
+	
+	float complex_SquareRoot_ret;
+	float SquareRoot_ret;
+	/* cubic inputs */
+	int (size = 64) complex_p0_pos;
+	int (size = 64) complex_p0_val;
+	int (size = 64) complex_p1_pos;
+	int (size = 64) complex_p1_val;
+	int (size = 64) complex_p2_pos;
+	int (size = 64) complex_p2_val;
+	int (size = 64) complex_p3_pos;
+	int (size = 64) complex_p3_val;
+	
+	int (size = 64) complex_p01;
+	int (size = 64) complex_p12;
+	int (size = 64) complex_p23;
+	int (size = 64) complex_p02;
+	int (size = 64) complex_p13; 
+	
+	int (size = 64) complex_input1_p_pos;
+	int (size = 64) complex_input1_p_val;
+	int (size = 64) complex_input2_p_pos;
+	int (size = 64) complex_input2_p_val;
+	int (size = 64) complex_output_p;
+	
+	int input_state;
+	int range1_i        := 0;
+	int range1_counter  := 0;
+	int range2_i        := 0;
+	int range2_counter  := 0;
+	int ra_result_index := 0;
+	int rb_result_index := 0;
+	
+	int beam1_i           := 0;
+	int beam1_counter     := 0;
+	int beam2_i           := 0;
+	int beam2_counter     := 0;
+	int ba_result_index   := 0;
+	int bb_result_index   := 0;
+	
+	int inputData_index := 0;
+	float total_sum     := 0.0;
+	
+	// Format of the pa matrix = pa[data_index][0 = pos, 1 = val]
+	List(type : List(type : int (size = 64), size = 2), size = NOF_PIXELS_KERNEL) complex_pa; 
+	List(type : List(type : int (size = 64), size = 2), size = NOF_PIXELS_KERNEL) complex_pb;
+	
+	List(type : List(type : int (size = 64), size = 2), size = NOF_PIXELS_KERNEL) complex_ra;
+	List(type : List(type : int (size = 64), size = 2), size = NOF_PIXELS_KERNEL) complex_rb;
+	
+	List(type : List(type : int (size = 64), size = 2), size = NOF_PIXELS_KERNEL) complex_ba;
+	List(type : List(type : int (size = 64), size = 2), size = NOF_PIXELS_KERNEL) complex_bb;
+	
+	
+	set_pa_pb : action ==>
+	guard inputData_index < NOF_PIXELS
+	var
+		int j
+	do
+		j := 0;
+		println("set_pa_pb - " + inputData_index);
+		while j < NOF_PIXELS_KERNEL do
+			complex_pa[j][0] := 1; //4575657222473777152;  // pos
+			complex_pa[j][1] := 1; //4575657222473777152;  // val
+
+			
+			complex_pb[j][0] := 1; //4575657222473777152; // pos
+			complex_pb[j][1] := 1; //4575657222473777152; // val
+			
+			j := j + 1;
+		end
+		
+		range1_i        := 0;		// let the range loops run
+		range2_i        := 0;		
+		inputData_index := inputData_index + NOF_PIXELS_KERNEL;
+	end
+
+ 
+ range_int_loop_1 : action ==>
+ 	guard range1_i < 36
+ 	do
+ 		println("range_int_loop_1 - " + range1_i);
+		complex_p0_pos := complex_pa[range1_i + range1_counter + 0][0];		
+		complex_p1_pos := complex_pa[range1_i + range1_counter + 1][0];
+		complex_p2_pos := complex_pa[range1_i + range1_counter + 2][0];
+		complex_p3_pos := complex_pa[range1_i + range1_counter + 3][0];
+		
+		input_state := 1; //trigger the set_cubic_inputs action 
+		
+		range1_counter := range1_counter + 1;
+		if range1_counter = 3 then
+			range1_counter := 0;
+			range1_i := range1_i + 6;
+		end
+ 	end
+ 	
+ 	range_int_loop_1_done : action ==> do println("range_int_loop_1_done"); 
+ 	end
+ 	
+ 	/* The second for loop which calls cubic() */
+ 	range_int_loop_2 : action ==>
+ 	guard range2_i < 36
+ 	do 
+ 		println("range_int_loop_2 - " + range2_i);
+ 		complex_p0_pos := complex_pb[range2_i + range2_counter + 0][0];
+		complex_p1_pos := complex_pb[range2_i + range2_counter + 1][0];
+		complex_p2_pos := complex_pb[range2_i + range2_counter + 2][0];
+		complex_p3_pos := complex_pb[range2_i + range2_counter + 3][0];
+		
+		input_state := 1; //trigger the set_cubic_inputs action
+		
+		range2_counter := range2_counter + 1;
+		if range2_counter = 3 then
+			range2_counter := 0;
+			range2_i := range2_i + 6;
+		end
+ 	end
+ 	
+ 	range_int_loop_2_done : action ==> do println("range_int_loop_2_done"); 
+ 	end
+ 	
+ 	/* Save the cubic ra results into ra.val */
+ 	store_ra_results : action ==> RA:[complex_output_p]
+ 	do
+ 		println("store_ra_results " + complex_output_p);
+ 		//complex_ra[ra_result_index][1] := complex_output_p;	// ra.val
+ 		
+/* 	
+ 		if ra_result_index < 18 then 
+ 			ra_result_index := ra_result_index + 1;
+		else
+			ra_result_index := 0;
+		end
+		
+*/		
+ 	end
+ 	
+  	/* Save the cubic rb results into rb.val */
+ 	store_rb_results : action ==> RB:[complex_output_p]
+ 	do
+ 		println("store_rb_results: " + complex_output_p);
+/*  		complex_rb[rb_result_index][1] := complex_output_p;	// rb.val
+ 		
+ 		if rb_result_index < 18 then 
+ 			rb_result_index := rb_result_index + 1;
+		else
+			rb_result_index := 0;
+		end
+*/				
+ 	end
+ 	
+ 	set_cubic_inputs : action ==>
+ 	guard input_state != 0
+ 	do
+ 		println("set_cubic_inputs");
+ 	// The final results will be in output_p_*
+	
+		if input_state = 1 then
+			complex_input1_p_pos := complex_p0_pos;
+			complex_input1_p_val := complex_p0_val;
+			complex_input2_p_pos := complex_p1_pos;
+			complex_input2_p_val := complex_p1_val;
+			
+			input_state := 2;
+			
+		else if input_state = 2 then
+			// Store the output from the previous state
+			complex_p01 := complex_output_p;
+			
+			// Set the inputs for the current state
+			complex_input1_p_pos := complex_p1_pos;
+			complex_input1_p_val := complex_p1_val;
+			complex_input2_p_pos := complex_p2_pos;
+			complex_input2_p_val := complex_p2_val;
+			
+			input_state := 3;
+			
+		else if input_state = 3 then
+			// Store the output from the previous state
+			complex_p12 := complex_output_p;
+			
+			// Set the inputs for the current state
+			complex_input1_p_pos := complex_p2_pos;
+			complex_input1_p_val := complex_p2_val;
+			complex_input2_p_pos := complex_p3_pos;
+			complex_input2_p_val := complex_p3_val;
+			
+			input_state := 4;
+			
+		else if input_state = 4 then
+			// Store the output from the previous state
+			complex_p23 := complex_output_p;
+			
+			// Set the inputs for the current state
+			complex_input1_p_pos := complex_p0_pos;
+			complex_input1_p_val := complex_p01;
+			complex_input2_p_pos := complex_p3_pos;
+			complex_input2_p_val := complex_p12;
+			
+			input_state := 5;
+			
+		else if input_state = 5 then
+			// Store the output from the previous state
+			complex_p02 := complex_output_p;
+			
+			// Set the inputs for the current state
+			complex_input1_p_pos := complex_p1_pos;
+			complex_input1_p_val := complex_p12;
+			complex_input2_p_pos := complex_p3_pos;
+			complex_input2_p_val := complex_p23;
+			
+			input_state := 6;
+					
+		else if input_state = 6 then
+			// Store the output from the previous state
+			complex_p13 := complex_output_p;
+			
+			// Set the inputs for the current state
+			complex_input1_p_pos := complex_p0_pos;
+			complex_input1_p_val := complex_p02;
+			complex_input2_p_pos := complex_p3_pos;
+			complex_input2_p_val := complex_p13;
+			
+			input_state := 0;
+ 		end
+ 		end
+ 		end
+ 		end
+ 		end
+ 		end
+ 	end
+ 
+ 	set_cubic_inputs_done : action ==> do println("set_cubic_inputs_done"); 
+ 	end
+ 	
+	__acc__cubic : action ==>
+	
+	/* Should be called 6 times to calculate for 1 pixel 
+	 * 
+	 * This action will use 12 floating-point inputs with each call.
+	 * 1st call inputs : p0, p1, d0, d1
+	 * 2nd call inputs : p1, p2, d1, d2
+	 * 3rd call inputs : p2, p3, d2, d3
+	 * 4th call inputs : p01, p12, d0, d2
+	 * 5th call inputs : p12, p23, d1, d3
+	 * 6th call inputs : p02, p13, d0, d3
+	 * 
+	 * */
+	var
+		int (size = 64) complex_tmp0,
+		int (size = 64) complex_tmp1,
+		int (size = 64) complex_tmp2,
+		int (size = 64) complex_tmp3,
+		int (size = 64) complex_d0,
+		int (size = 64) complex_d1,
+		int (size = 64) x_int
+	do
+		println("range-cubic");
+
+		x_int := 1; //4575657222473777152;
+		
+		// calculate d
+		complex_d0 := x_int - complex_input1_p_pos;
+		complex_d1 := x_int - complex_input2_p_pos;
+		
+		// C_mul1 
+		complex_tmp0 := complex_input1_p_val * complex_d1;
+		
+		// C_mul2
+		complex_tmp1 := complex_input2_p_val * complex_d0;
+		
+		// C_sub1
+		complex_tmp2 := complex_tmp0 - complex_tmp1;
+		
+		// C_sub2
+		complex_tmp3 := complex_input1_p_pos - complex_input2_p_pos;
+		
+		// C_div
+		complex_output_p := complex_tmp2 / complex_tmp3;
+		
+
+	end
+	
+	
+	
+	schedule fsm state1 :
+		state1 (set_pa_pb ) 			--> state3;
+		state3 (range_int_loop_1) 		--> state4;
+		state3 (range_int_loop_1_done)	--> state7;
+		state4 (set_cubic_inputs)		--> state6;
+		state4 (set_cubic_inputs_done)	--> state5;
+		state5 (store_ra_results)		--> state3;
+		state6 (__acc__cubic)			--> state4; 
+		state7 (range_int_loop_2)		--> state8;
+		state7 (range_int_loop_2_done)	--> state1;
+		state8 (set_cubic_inputs)		--> state10;
+		state8 (set_cubic_inputs_done)	--> state9;
+		state9 (store_rb_results)		--> state7;
+		state10 (__acc__cubic)			--> state8;
+	end
+	
+	priority
+		set_cubic_inputs > set_cubic_inputs_done;
+		range_int_loop_1 > range_int_loop_1_done;
+		range_int_loop_2 > range_int_loop_2_done;
+	end
+end
+
+
+

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Actor id="0$id$w3585a" name="joiner">
+    <Note kind="counter" value="0"/>
+    <Port id="0$id$w3585aa" kind="Input" name="in1"/>
+    <Port id="0$id$w3585ab1" kind="Input" name="in2"/>
+    <Port id="0$id$w3585ab2" kind="Input" name="in3"/>
+    <Port id="0$id$w3585ab3" kind="Input" name="in4"/>
+    <Port id="0$id$w3585ab4" kind="Output" name="output"/>
+    <Action id="0$id$w3585ab5" text-begin-col="2" text-begin-line="8" text-end-col="2"
+            text-end-line="9">
+        <Input id="0$id$w3585ab5a" kind="Elements" port="in1" text-begin-col="13"
+               text-begin-line="8"
+               text-end-col="19"
+               text-end-line="8">
+            <Decl id="0$id$w3585ab5aa" kind="Input" name="data1"/>
+        </Input>
+        <Input id="0$id$w3585ab5b1" kind="Elements" port="in2" text-begin-col="26"
+               text-begin-line="8"
+               text-end-col="32"
+               text-end-line="8">
+            <Decl id="0$id$w3585ab5b1a" kind="Input" name="data2"/>
+        </Input>
+        <Input id="0$id$w3585ab5b2" kind="Elements" port="in3" text-begin-col="39"
+               text-begin-line="8"
+               text-end-col="45"
+               text-end-line="8">
+            <Decl id="0$id$w3585ab5b2a" kind="Input" name="data3"/>
+        </Input>
+        <Input id="0$id$w3585ab5b3" kind="Elements" port="in4" text-begin-col="52"
+               text-begin-line="8"
+               text-end-col="58"
+               text-end-line="8">
+            <Decl id="0$id$w3585ab5b3a" kind="Input" name="data4"/>
+        </Input>
+    </Action>
+</Actor>

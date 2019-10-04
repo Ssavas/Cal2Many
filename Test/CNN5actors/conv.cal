@@ -1,0 +1,116 @@
+/*
+ * The actor that performs the convolution.
+ * It receives the image data from the splitter
+ * and applies the filters. Sends the results to the combiner (maybe it shouldn't).
+ * 
+ * Read the input 49 times, (apply a filter, send the result) x 64.
+ * Author: Süleyman Savas
+ * 2019-02-20
+ * Halmstad University
+ * 
+ */
+ 
+ 
+ 
+ 
+ //package cnnlayer;
+ 
+ actor conv() float ImageIn ==> float ResultOut:
+ 
+ 	int filterRowSize   = 7;
+ 	int filterColSize   = 7;
+ 	int numberOfFilters = 64;
+ 	int inputCounter    := 0;
+ 	int filterCounter   := 0;
+ 	int inputColCounter := 0;
+ 	int inputRowCounter := 0;
+ 	int stride           = 2;
+ 	int inputColSize    = 230;//230; //224 + colPadding;
+ 	int inputRowSize    = 230;//230;
+	float applyResult  := 0.0;
+	float conv7_ret    := 0;
+ 	
+ 	List(type : float, size = 49) inputImage;
+ 	
+ 	  
+	initReadInput : action ImageIn:[value] ==>
+	guard (inputCounter < 49 /* filterRowSize * filterColSize */) and (inputColCounter = 0) && (inputRowCounter + filterRowSize <= inputRowSize)
+	do
+		//println('initReadInput');
+		inputImage[inputCounter] := value;
+		inputCounter := inputCounter + 1;
+	end
+	
+	readInput : action ImageIn:[value] ==>
+	guard inputCounter < 14 /* stride * filterColSize */  and (inputRowCounter + filterRowSize <= inputRowSize)
+	do
+		//println('readInput');
+		inputImage[inputCounter] := value;
+		inputCounter := inputCounter + 1;
+	end
+	
+	readInput_done : action ==>
+	guard (inputRowCounter + filterRowSize <= inputRowSize)
+	do
+		inputCounter := 0;
+	end
+ /*
+ 	applyFilter : action ==> ResultOut:[result]
+ 	guard filterCounter < numberOfFilters
+ 	var
+		List(type : List(type : List(type : int, size = filterColSize), 
+			size = filterRowSize), size = numberOfFilters) filters,
+		int i := 0,
+		float result := 0.0,
+		int j := 0,
+		int imageIndex := 0,
+		float tmp
+	do
+		//println('applyFilter');
+	  	while i < filterRowSize do
+	 		j := 0;
+			while j < filterColSize do
+				tmp    := filters[filterCounter][i][j] * inputImage[imageIndex];
+				result := result + tmp;
+				
+				j := j + 1;
+				imageIndex := imageIndex + 1;
+			end
+			i := i + 1;
+		end
+		filterCounter := filterCounter + 1;
+ 	end
+ */
+ 
+ 	__acc__applyFilter : action ==> ResultOut:[applyResult]
+	guard filterCounter < numberOfFilters
+	do
+		conv7(filterCounter, inputImage[0]);
+		applyResult := conv7_ret;
+		filterCounter := filterCounter + 1;
+	end
+	
+ 	applyFilter_done : action ==>
+ 	do
+ 		filterCounter   := 0;
+ 		inputColCounter := inputColCounter + stride;
+ 		
+ 		if(inputColCounter + filterColSize > inputColSize) then
+ 			inputRowCounter := inputRowCounter + stride;
+ 			inputColCounter := 0;
+		end
+ 	end
+ 	
+ 	schedule fsm state1:
+ 		state1(initReadInput)    --> state1;
+	 	state1(readInput)        --> state1;
+	 	state1(readInput_done)   --> state2;
+	 	state2(__acc__applyFilter)      --> state2;
+	 	state2(applyFilter_done) --> state1;
+ 	end
+ 	
+ 	priority
+ 		initReadInput > readInput > readInput_done;
+ 		applyFilter > applyFilter_done;
+ 	end
+ end

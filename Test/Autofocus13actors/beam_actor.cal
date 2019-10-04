@@ -1,0 +1,409 @@
+/*
+ * The actor that applies beam interpolation in autufocus criterion calculation
+ * using complex number structure
+ * Süleyman Savas
+ * 2018-11-21
+ * CERES, ITE, HH
+ */
+ 
+ 
+// package autofocus;
+ 
+ actor beam_actor () int (size = 64) RA, int (size = 64) RB ==>  int (size = 64) BA, int (size = 64) BB:
+ 	
+ 	int NOF_PIXELS_KERNEL = 36;
+	int NOF_PIXELS        = 216 / 6;
+	
+	/* cubic inputs */
+	int (size = 64) complex_p0_pos;
+	int (size = 64) complex_p0_val;
+	int (size = 64) complex_p1_pos;
+	int (size = 64) complex_p1_val;
+	int (size = 64) complex_p2_pos;
+	int (size = 64) complex_p2_val;
+	int (size = 64) complex_p3_pos;
+	int (size = 64) complex_p3_val;
+	
+	int (size = 64) complex_p01;
+	int (size = 64) complex_p12;
+	int (size = 64) complex_p23;
+	int (size = 64) complex_p02;
+	int (size = 64) complex_p13; 
+	
+	int (size = 64) complex_input1_p_pos;
+	int (size = 64) complex_input1_p_val;
+	int (size = 64) complex_input2_p_pos;
+	int (size = 64) complex_input2_p_val;
+	int (size = 64) complex_output_p;
+	
+	int input_state;
+	
+	int beam1_i           := 0;
+	int beam1_counter     := 0;
+	int beam2_i           := 0;
+	int beam2_counter     := 0;
+	int ba_result_index   := 0;
+	int bb_result_index   := 0;
+	
+	int inputData_index := 0;
+	int ra_val_counter  := 0;
+	int rb_val_counter  := 0;
+	//float total_sum     := 0.0;
+	
+	// Format of the pa matrix = pa[data_index][0 = pos, 1 = val]
+	List(type : List(type : int (size = 64), size = 2), size = NOF_PIXELS_KERNEL/2) complex_ra;
+	List(type : List(type : int (size = 64), size = 2), size = NOF_PIXELS_KERNEL/2) complex_rb;
+	
+	List(type : List(type : int (size = 64), size = 2), size = NOF_PIXELS_KERNEL) complex_ba;
+	List(type : List(type : int (size = 64), size = 2), size = NOF_PIXELS_KERNEL) complex_bb;
+ 
+  	set_ra_rb_pos : action ==>
+  	guard inputData_index < NOF_PIXELS
+ 	var
+ 		int i := 0
+ 	do
+ 		println("set_ra_rb_pos");
+ 		while i < 18 do
+ 			complex_rb[i][0] := 1; // complex_pb[i][0];	// pos
+ 			complex_ra[i][0] := 1; // complex_pa[i][0];	// pos
+ 			i        := i + 6;
+ 			
+ 		end
+ 		inputData_index := inputData_index + NOF_PIXELS_KERNEL; 
+ 	end
+ 	
+ 	/* Read the ra values from the range actor, 18 times */
+ 	/*read_ra_val : action RA:[ra_val] repeat 18 ==>
+ 	var
+ 		int i := 0 
+ 	do
+ 		while i < 18 do
+ 			complex_ra[i][1] := ra_val[i];	// ra.val
+ 			i                 := i + 1;
+		end 	
+		beam1_i := 0;	// 2nd counter for the first loop
+ 		beam2_i := 0;	// 2nd counter for the second loop
+ 	end
+ 	
+ 	read_rb_val : action RB:[rb_val] repeat 18 ==>
+ 	var
+ 		int i := 0 
+ 	do
+ 		while i < 18 do
+ 			complex_rb[i][1] := rb_val[i];	// ra.val
+ 			i                 := i + 1;
+		end 	
+ 	end*/
+	
+	read_ra_val : action RA:[ra_val] ==>
+ 	guard ra_val_counter < 18
+ 	do 
+ 		complex_ra[ra_val_counter][1] := ra_val;
+ 		ra_val_counter                := ra_val_counter + 1;
+ 	end
+ 	
+ 	read_ra_val_done : action ==>
+ 	do
+ 		ra_val_counter := 0;
+		beam1_i := 0;	// 2nd counter for the first loop
+ 		beam2_i := 0;	// 2nd counter for the second loop
+ 	end
+ 	
+ 	read_rb_val : action RB:[rb_val] ==>
+ 	guard rb_val_counter < 18
+ 	do 
+ 		complex_rb[rb_val_counter][1] := rb_val;
+ 		rb_val_counter                := rb_val_counter + 1;
+ 	end
+ 	
+ 	read_rb_val_done : action ==>
+ 	do
+ 		rb_val_counter := 0;
+ 	end
+ 	
+ 	
+ 	
+ 	/* The first for loop which calls cubic() */
+ 	beam_int_loop_1 : action ==>
+ 	guard beam1_i < 3
+ 	do
+ 		println("beam_int_loop_1 - " + beam1_i);
+		complex_p0_pos := complex_ra[beam1_i + beam1_counter + 0][0];
+		complex_p1_pos := complex_ra[beam1_i + beam1_counter + 3][0];
+		complex_p2_pos := complex_ra[beam1_i + beam1_counter + 6][0];
+		complex_p3_pos := complex_ra[beam1_i + beam1_counter + 9][0];
+		
+		input_state := 1; //trigger the set_cubic_inputs action 
+		
+		beam1_counter := beam1_counter + 3;
+		if beam1_counter = 9 then
+			beam1_counter := 0;
+			beam1_i       := beam1_i + 1;
+		end
+ 	end
+ 	
+ 	beam_int_loop_1_done : action ==> do println("beam_int_loop_1_done"); 
+ 	end
+ 	
+ 	/* The second for loop which calls cubic() */
+ 	beam_int_loop_2 : action ==>
+ 	guard beam2_i < 3
+ 	do 
+ 		println("beam_int_loop_2 - " + beam2_i);
+ 		complex_p0_pos := complex_rb[beam2_i + beam2_counter + 0][0];
+		complex_p1_pos := complex_rb[beam2_i + beam2_counter + 3][0];
+		complex_p2_pos := complex_rb[beam2_i + beam2_counter + 6][0];
+		complex_p3_pos := complex_rb[beam2_i + beam2_counter + 9][0];
+		
+		input_state := 1; //trigger the set_cubic_inputs action
+		
+		beam2_counter := beam2_counter + 3;
+		if beam2_counter = 9 then
+			beam2_counter := 0;
+			beam2_i       := beam2_i + 1;
+		end
+ 	end
+ 	
+ 	beam_int_loop_2_done : action ==> do println("beam_int_loop_2_done"); 
+ 	end
+ 	
+ 	/* Save the cubic ba results into ba.val */
+ 	store_ba_results : action ==>
+ 	do
+ 		println("store_ba_results - " + ba_result_index);
+ 		complex_ba[ba_result_index][1] := complex_output_p;	// ba.val
+ 		
+ 		ba_result_index   := ba_result_index + 3;
+		if ba_result_index = 9 then
+			ba_result_index := 1;
+		end
+		if ba_result_index = 10 then
+			ba_result_index := 2;
+		end
+		if ba_result_index = 11 then
+			ba_result_index := 0;
+		end
+ 	end
+ 	
+  	/* Save the cubic bb results into bb.val */
+ 	store_bb_results : action ==>
+ 	do
+ 		println("store_bb_results");
+ 		complex_bb[bb_result_index][1] := complex_output_p;	// bb.val.real
+ 		
+		bb_result_index   := bb_result_index + 3;
+		if bb_result_index = 9 then
+			bb_result_index := 1;
+		end
+		if bb_result_index = 10 then
+			bb_result_index := 2;
+		end
+		if bb_result_index = 11 then
+			bb_result_index := 0;
+		end
+ 	end
+ 	
+	//correlation : action ==> BA: [complex_ba[0][1], complex_ba[1][1], complex_ba[2][1], complex_ba[3][1], complex_ba[4][1], complex_ba[5][1], complex_ba[6][1], complex_ba[7][1], complex_ba[8][1]],  
+	//BB:[complex_bb[0][1], complex_bb[1][1], complex_bb[2][1], complex_bb[3][1], complex_bb[4][1], complex_bb[5][1], complex_bb[6][1], complex_bb[7][1], complex_bb[8][1]]
+		correlation : action ==> BA: [localba] repeat 9, BB: [localbb] repeat 9 	
+	var
+		int i,
+		List(type :int(size = 64), size = 9) localba,
+		List(type :int(size = 64), size = 9) localbb
+	do
+		println("correlation");
+		i := 0;
+		
+		while i < 9 do
+			localba[i] := complex_ba[i][1];
+			localbb[i] := complex_bb[i][1];
+			i := i + 1;
+		end
+	end
+
+/* 		
+	procedure complex_SquareRoot(int (size = 64) ns)
+	begin  	
+		SquareRoot_ret := 1;
+	end 	
+*/	
+ 	set_cubic_inputs : action ==>
+ 	guard input_state != 0
+ 	do
+ 		println("set_cubic_inputs");
+ 	// The final results will be in output_p_*
+	
+		if input_state = 1 then
+			complex_input1_p_pos := complex_p0_pos;
+			complex_input1_p_val := complex_p0_val;
+			complex_input2_p_pos := complex_p1_pos;
+			complex_input2_p_val := complex_p1_val;
+			
+			input_state := 2;
+			
+		else if input_state = 2 then
+			// Store the output from the previous state
+			complex_p01 := complex_output_p;
+			
+			// Set the inputs for the current state
+			complex_input1_p_pos := complex_p1_pos;
+			complex_input1_p_val := complex_p1_val;
+			complex_input2_p_pos := complex_p2_pos;
+			complex_input2_p_val := complex_p2_val;
+			
+			input_state := 3;
+			
+		else if input_state = 3 then
+			// Store the output from the previous state
+			complex_p12 := complex_output_p;
+			
+			// Set the inputs for the current state
+			complex_input1_p_pos := complex_p2_pos;
+			complex_input1_p_val := complex_p2_val;
+			complex_input2_p_pos := complex_p3_pos;
+			complex_input2_p_val := complex_p3_val;
+			
+			input_state := 4;
+			
+		else if input_state = 4 then
+			// Store the output from the previous state
+			complex_p23 := complex_output_p;
+			
+			// Set the inputs for the current state
+			complex_input1_p_pos := complex_p0_pos;
+			complex_input1_p_val := complex_p01;
+			complex_input2_p_pos := complex_p3_pos;
+			complex_input2_p_val := complex_p12;
+			
+			input_state := 5;
+			
+		else if input_state = 5 then
+			// Store the output from the previous state
+			complex_p02 := complex_output_p;
+			
+			// Set the inputs for the current state
+			complex_input1_p_pos := complex_p1_pos;
+			complex_input1_p_val := complex_p12;
+			complex_input2_p_pos := complex_p3_pos;
+			complex_input2_p_val := complex_p23;
+			
+			input_state := 6;
+					
+		else if input_state = 6 then
+			// Store the output from the previous state
+			complex_p13 := complex_output_p;
+			
+			// Set the inputs for the current state
+			complex_input1_p_pos := complex_p0_pos;
+			complex_input1_p_val := complex_p02;
+			complex_input2_p_pos := complex_p3_pos;
+			complex_input2_p_val := complex_p13;
+			
+			input_state := 0;
+ 		end
+ 		end
+ 		end
+ 		end
+ 		end
+ 		end
+ 	end
+ 	
+ 	set_cubic_inputs_done : action ==> do println("set_cubic_inputs_done"); 
+ 	end
+ 	
+	__acc__cubic : action ==>
+	
+	/* Should be called 6 times to calculate for 1 pixel 
+	 * 
+	 * This action will use 12 floating-point inputs with each call.
+	 * 1st call inputs : p0, p1, d0, d1
+	 * 2nd call inputs : p1, p2, d1, d2
+	 * 3rd call inputs : p2, p3, d2, d3
+	 * 4th call inputs : p01, p12, d0, d2
+	 * 5th call inputs : p12, p23, d1, d3
+	 * 6th call inputs : p02, p13, d0, d3
+	 * 
+	 * */
+	var
+		int (size = 64) complex_tmp0,
+		int (size = 64) complex_tmp1,
+		int (size = 64) complex_tmp2,
+		int (size = 64) complex_tmp3,
+		int (size = 64) complex_d0,
+		int (size = 64) complex_d1,
+		int (size = 64) x_int
+	do
+		println("beam-cubic");
+
+		x_int := 1; //4575657222473777152;
+		
+		// calculate d
+		complex_d0 := x_int - complex_input1_p_pos;
+		complex_d1 := x_int - complex_input2_p_pos;
+		
+		// C_mul1 
+		complex_tmp0 := complex_input1_p_val * complex_d1;
+		
+		// C_mul2
+		complex_tmp1 := complex_input2_p_val * complex_d0;
+		
+		// C_sub1
+		complex_tmp2 := complex_tmp0 - complex_tmp1;
+		
+		// C_sub2
+		complex_tmp3 := complex_input1_p_pos - complex_input2_p_pos;
+
+		if complex_tmp3 = 0 then
+			complex_tmp3 := 1;
+		end
+		
+		// C_div
+		complex_output_p := complex_tmp2 / complex_tmp3;
+		
+
+	end
+ 	
+ 	
+ 	set_ba_bb_pos : action ==>
+ 	var
+ 		int i := 0
+ 	do
+ 		println("set_ra_rb_pos");
+ 		while i < 6 do
+ 			complex_ba[i][0] := complex_ra[i][0]; // pos
+ 			complex_bb[i][0] := complex_rb[i][0]; // pos
+ 			i                := i + 1;
+ 		end
+ 	end
+ 	
+ 	
+ 	schedule fsm state1 :
+		state1 (set_ra_rb_pos)          --> state2;
+		state2 (read_ra_val)            --> state2;
+		state2 (read_ra_val_done)       --> state12;	
+		state12 (beam_int_loop_1)		--> state13;
+		state12 (beam_int_loop_1_done)	--> state3;
+		state13 (set_cubic_inputs)		--> state15;
+		state13 (set_cubic_inputs_done)	--> state14;
+		state14 (store_ba_results)		--> state12;
+		state15 (__acc__cubic)			--> state13;
+		state3 (read_rb_val)            --> state3;
+		state3 (read_rb_val_done)       --> state16;
+		state16 (beam_int_loop_2)		--> state17;
+		state16 (beam_int_loop_2_done)	--> state11;
+		state17 (set_cubic_inputs)		--> state19;
+		state17 (set_cubic_inputs_done)	--> state18;
+		state18 (store_bb_results)		--> state16;
+		state19 (__acc__cubic)			--> state17;
+		state11 (set_ba_bb_pos)			--> state20;
+		state20 (correlation)			--> state1;
+	end
+ 	
+ 	priority
+		set_cubic_inputs > set_cubic_inputs_done;
+		beam_int_loop_1 > beam_int_loop_1_done;
+		beam_int_loop_2 > beam_int_loop_2_done;
+	end
+ 	
+ end
+ 

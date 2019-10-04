@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Actor id="0$id$w1265a" name="boundary">
+    <Decl assignable="Yes" id="0$id$w1265ab2" kind="Variable" name="sqrtx"
+          text-begin-col=""
+          text-begin-line=""
+          text-end-col="17"
+          text-end-line="6">
+        <Type id="0$id$w1265ab2a" name="float"/>
+        <Expr id="0$id$w1265ab2b1" kind="Literal" literal-kind="Real" text-begin-col="17"
+              text-begin-line="6"
+              text-end-col="17"
+              text-end-line="6"
+              value="0.0"/>
+    </Decl>
+    <Decl assignable="Yes" id="0$id$w1265ab3" kind="Variable" name="r" text-begin-col=""
+          text-begin-line=""
+          text-end-col="13"
+          text-end-line="7">
+        <Type id="0$id$w1265ab3a" name="float"/>
+        <Expr id="0$id$w1265ab3b1" kind="Literal" literal-kind="Real" text-begin-col="13"
+              text-begin-line="7"
+              text-end-col="13"
+              text-end-line="7"
+              value="0.0"/>
+    </Decl>
+    <Decl id="0$id$w1265ab5" kind="Variable" name="squareRoot" text-begin-col="5"
+          text-begin-line="32"
+          text-end-col="9"
+          text-end-line="45">
+        <Type id="0$id$w1265ab5a" infer="true" kind="Procedure"/>
+        <Expr id="0$id$w1265ab5b1" kind="Proc">
+            <Decl id="0$id$w1265ab5b1a" kind="Parameter" name="ns">
+                <Type id="0$id$w1265ab5b1aa" name="float"/>
+            </Decl>
+            <Decl assignable="Yes" id="0$id$w1265ab5b1b1" kind="Variable" name="x"
+                  text-begin-col=""
+                  text-begin-line=""
+                  text-end-col="28"
+                  text-end-line="34">
+                <Type id="0$id$w1265ab5b1b1a" name="float"/>
+                <Expr id="0$id$w1265ab5b1b1b1" kind="Var" name="ns" text-begin-col="28"
+                      text-begin-line="34"
+                      text-end-col="28"
+                      text-end-line="34">
+                    <Note assignable="no" decl-id="0$id$w1265ab5b1a" free="no" kind="varRef" mutable="no"
+                          scope-id="0$id$w1265ab5b1">
+                        <Type id="0$id$w1265ab5b1aa" name="float"/>
+                    </Note>
+                    <Note kind="freeVar" name="ns"/>
+                </Expr>
+            </Decl>
+            <Decl assignable="Yes" id="0$id$w1265ab5b1b2" kind="Variable" name="y"
+                  text-begin-col=""
+                  text-begin-line=""
+                  text-end-col="28"
+                  text-end-line="35">
+                <Type id="0$id$w1265ab5b1b2a" name="float"/>
+                <Expr id="0$id$w1265ab5b1b2b1" kind="Literal" literal-kind="Real" text-begin-col="28"
+                      text-begin-line="35"
+                      text-end-col="28"
+                      text-end-line="35"
+                      value="1.0"/>
+            </Decl>
+            <Decl assignable="Yes" id="0$id$w1265ab5b1b3" kind="Variable" name="e"
+                  text-begin-col=""
+                  text-begin-line=""
+                  text-end-col="28"
+                  text-end-line="37">
+                <Type id="0$id$w1265ab5b1b3a" name="float"/>
+                <Expr id="0$id$w1265ab5b1b3b1" kind="Literal" literal-kind="Real" text-begin-col="28"
+                      text-begin-line="37"
+                      text-end-col="28"
+                      text-end-line="37"
+                      value="0.000001"/>
+            </Decl>
+            <Stmt id="0$id$w1265ab5b1b4" kind="While" text-begin-col="17" text-begin-line="39"
+                  text-end-col="17"
+                  text-end-line="43">
+                <Expr kind="Application">
+                    <Expr kind="Var" name="$gt" old="no">
+                        <Note kind="freeVar" name="$gt"/>
+                    </Expr>
+                    <Args>
+                        <Expr kind="Application">
+                            <Expr kind="Var" name="$sub" old="no">
+                                <Note kind="freeVar" name="$sub"/>
+                            </Expr>
+                            <Args>
+                                <Expr id="0$id$w1265ab5b1b4aa" kind="Var" name="x" text-begin-col="24"
+                                      text-begin-line="39"
+                                      text-end-col="24"
+                                      text-end-line="39">
+                                    <Note assignable="yes" decl-id="0$id$w1265ab5b1b1" free="no" kind="varRef"
+                                          mutable="no"
+                                          scope-id="0$id$w1265ab5b1">
+                                        <Type id="0$id$w1265ab5b1b1a" name="float"/>
+                                    </Note>
+                                    <Note kind="freeVar" name="x"/>
+                                </Expr>
+                                <Expr id="0$id$w1265ab5b1b4ab2" kind="Var" name="y" text-begin-col="28"
+                                      text-begin-line="39"
+                                      text-end-col="28"
+                                      text-end-line="39">
+                                    <Note assignable="yes" decl-id="0$id$w1265ab5b1b2" free="no" kind="varRef"
+                                          mutable="no"
+                                          scope-id="0$id$w1265ab5b1">
+                                        <Type id="0$id$w1265ab5b1b2a" name="float"/>
+                                    </Note>
+                                    <Note kind="freeVar" name="y"/>
+                                </Expr>
+                            </Args>
+                            <Note kind="freeVar" name="$sub"/>
+                            <Note kind="freeVar" name="x"/>
+                            <Note kind="freeVar" name="y"/>
+                        </Expr>
+                        <Expr id="0$id$w1265ab5b1b4ab4" kind="Var" name="e" text-begin-col="32"
+                              text-begin-line="39"
+                              text-end-col="32"
+                              text-end-line="39">
+                            <Note assignable="yes" decl-id="0$id$w1265ab5b1b3" free="no" kind="varRef"
+                                  mutable="no"
+                                  scope-id="0$id$w1265ab5b1">
+                                <Type id="0$id$w1265ab5b1b3a" name="float"/>
+                            </Note>
+                            <Note kind="freeVar" name="e"/>
+                        </Expr>
+                    </Args>
+                    <Note kind="freeVar" name="$gt"/>
+                    <Note kind="freeVar" name="$sub"/>
+                    <Note kind="freeVar" name="x"/>
+                    <Note kind="freeVar" name="y"/>
+                    <Note kind="freeVar" name="e"/>
+                </Expr>
+                <Stmt id="0$id$w1265ab5b1b4b1" kind="Block">
+                    <Stmt id="0$id$w1265ab5b1b4b1a" kind="Assign" name="x" text-begin-col="25"
+                          text-begin-line="41"
+                          text-end-col="39"
+                          text-end-line="41">
+                        <Expr kind="Application">
+                            <Expr kind="Var" name="$div" old="no">
+                                <Note kind="freeVar" name="$div"/>
+                            </Expr>
+                            <Args>
+                                <Expr kind="Application">
+                                    <Expr kind="Var" name="$add" old="no">
+                                        <Note kind="freeVar" name="$add"/>
+                                    </Expr>
+                                    <Args>
+                                        <Expr id="0$id$w1265ab5b1b4b1aaaa" kind="Var" name="x" text-begin-col="31"
+                                              text-begin-line="41"
+                                              text-end-col="31"
+                                              text-end-line="41">
+                                            <Note assignable="yes" decl-id="0$id$w1265ab5b1b1" free="no" kind="varRef"
+                                                  mutable="no"
+                                                  scope-id="0$id$w1265ab5b1">
+                                                <Type id="0$id$w1265ab5b1b1a" name="float"/>
+                                            </Note>
+                                            <Note kind="freeVar" name="x"/>
+                                        </Expr>
+                                        <Expr id="0$id$w1265ab5b1b4b1aaab2" kind="Var" name="y" text-begin-col="35"
+                                              text-begin-line="41"
+                                              text-end-col="35"
+                                              text-end-line="41">
+                                            <Note assignable="yes" decl-id="0$id$w1265ab5b1b2" free="no" kind="varRef"
+                                                  mutable="no"
+                                                  scope-id="0$id$w1265ab5b1">
+                                                <Type id="0$id$w1265ab5b1b2a" name="float"/>
+                                            </Note>
+                                            <Note kind="freeVar" name="y"/>
+                                        </Expr>
+                                    </Args>
+                                    <Note kind="freeVar" name="$add"/>
+                                    <Note kind="freeVar" name="x"/>
+                                    <Note kind="freeVar" name="y"/>
+                                </Expr>
+                                <Expr id="0$id$w1265ab5b1b4b1aab2" kind="Literal" literal-kind="Integer"
+                                      text-begin-col="38"
+                                      text-begin-line="41"
+                                      text-end-col="38"
+                                      text-end-line="41"
+                                      value="2"/>
+                            </Args>
+                            <Note kind="freeVar" name="$div"/>
+                            <Note kind="freeVar" name="$add"/>
+                            <Note kind="freeVar" name="x"/>
+                            <Note kind="freeVar" name="y"/>
+                        </Expr>
+                        <Note assignable="yes" decl-id="0$id$w1265ab5b1b1" free="no" kind="varMod"
+                              mutable="no"
+                              scope-id="0$id$w1265ab5b1">
+                            <Type id="0$id$w1265ab5b1b1a" name="float"/>
+                        </Note>
+                        <Note kind="freeVar" name="$div"/>
+                        <Note kind="freeVar" name="$add"/>
+                        <Note kind="freeVar" name="x"/>
+                        <Note kind="freeVar" name="y"/>
+                    </Stmt>
+                    <Stmt id="0$id$w1265ab5b1b4b1b1" kind="Assign" name="y" text-begin-col="25"
+                          text-begin-line="42"
+                          text-end-col="34"
+                          text-end-line="42">
+                        <Expr kind="Application">
+                            <Expr kind="Var" name="$div" old="no">
+                                <Note kind="freeVar" name="$div"/>
+                            </Expr>
+                            <Args>
+                                <Expr id="0$id$w1265ab5b1b4b1b1aa" kind="Var" name="ns" text-begin-col="30"
+                                      text-begin-line="42"
+                                      text-end-col="30"
+                                      text-end-line="42">
+                                    <Note assignable="no" decl-id="0$id$w1265ab5b1a" free="no" kind="varRef" mutable="no"
+                                          scope-id="0$id$w1265ab5b1">
+                                        <Type id="0$id$w1265ab5b1aa" name="float"/>
+                                    </Note>
+                                    <Note kind="freeVar" name="ns"/>
+                                </Expr>
+                                <Expr id="0$id$w1265ab5b1b4b1b1ab2" kind="Var" name="x" text-begin-col="33"
+                                      text-begin-line="42"
+                                      text-end-col="33"
+                                      text-end-line="42">
+                                    <Note assignable="yes" decl-id="0$id$w1265ab5b1b1" free="no" kind="varRef"
+                                          mutable="no"
+                                          scope-id="0$id$w1265ab5b1">
+                                        <Type id="0$id$w1265ab5b1b1a" name="float"/>
+                                    </Note>
+                                    <Note kind="freeVar" name="x"/>
+                                </Expr>
+                            </Args>
+                            <Note kind="freeVar" name="$div"/>
+                            <Note kind="freeVar" name="ns"/>
+                            <Note kind="freeVar" name="x"/>
+                        </Expr>
+                        <Note assignable="yes" decl-id="0$id$w1265ab5b1b2" free="no" kind="varMod"
+                              mutable="no"
+                              scope-id="0$id$w1265ab5b1">
+                            <Type id="0$id$w1265ab5b1b2a" name="float"/>
+                        </Note>
+                        <Note kind="freeVar" name="$div"/>
+                        <Note kind="freeVar" name="ns"/>
+                        <Note kind="freeVar" name="x"/>
+                    </Stmt>
+                    <Note kind="freeVar" name="$div"/>
+                    <Note kind="freeVar" name="$add"/>
+                    <Note kind="freeVar" name="x"/>
+                    <Note kind="freeVar" name="y"/>
+                    <Note kind="freeVar" name="ns"/>
+                </Stmt>
+                <Note kind="freeVar" name="$gt"/>
+                <Note kind="freeVar" name="$sub"/>
+                <Note kind="freeVar" name="x"/>
+                <Note kind="freeVar" name="y"/>
+                <Note kind="freeVar" name="e"/>
+                <Note kind="freeVar" name="$div"/>
+                <Note kind="freeVar" name="$add"/>
+                <Note kind="freeVar" name="ns"/>
+            </Stmt>
+            <Stmt id="0$id$w1265ab5b1b5" kind="Assign" name="sqrtx" text-begin-col="17"
+                  text-begin-line="44"
+                  text-end-col="27"
+                  text-end-line="44">
+                <Expr id="0$id$w1265ab5b1b5a" kind="Var" name="x" text-begin-col="26"
+                      text-begin-line="44"
+                      text-end-col="26"
+                      text-end-line="44">
+                    <Note assignable="yes" decl-id="0$id$w1265ab5b1b1" free="no" kind="varRef"
+                          mutable="no"
+                          scope-id="0$id$w1265ab5b1">
+                        <Type id="0$id$w1265ab5b1b1a" name="float"/>
+                    </Note>
+                    <Note kind="freeVar" name="x"/>
+                </Expr>
+                <Note assignable="yes" decl-id="0$id$w1265ab2" free="no" kind="varMod" mutable="no"
+                      scope-id="0$id$w1265a">
+                    <Type id="0$id$w1265ab2a" name="float"/>
+                </Note>
+                <Note kind="freeVar" name="x"/>
+            </Stmt>
+            <Note kind="freeVar" name="$gt"/>
+            <Note kind="freeVar" name="$sub"/>
+            <Note kind="freeVar" name="$div"/>
+            <Note kind="freeVar" name="$add"/>
+        </Expr>
+    </Decl>
+    <Note kind="counter" value="0"/>
+    <Port id="0$id$w1265aa" kind="Input" name="ch_in"/>
+    <Port id="0$id$w1265ab1" kind="Output" name="ch_out"/>
+    <Action id="0$id$w1265ab4" text-begin-col="2" text-begin-line="9" text-end-col="2"
+            text-end-line="30">
+        <Input id="0$id$w1265ab4a" kind="Elements" port="ch_in" text-begin-col="15"
+               text-begin-line="9"
+               text-end-col="20"
+               text-end-line="9">
+            <Decl id="0$id$w1265ab4aa" kind="Input" name="x_in"/>
+        </Input>
+        <Decl assignable="Yes" id="0$id$w1265ab4b2" kind="Variable" name="a"
+              text-begin-col=""
+              text-begin-line=""
+              text-end-col="9"
+              text-end-line="11">
+            <Type id="0$id$w1265ab4b2a" name="float"/>
+        </Decl>
+        <Decl assignable="Yes" id="0$id$w1265ab4b3" kind="Variable" name="b"
+              text-begin-col=""
+              text-begin-line=""
+              text-end-col="9"
+              text-end-line="12">
+            <Type id="0$id$w1265ab4b3a" name="float"/>
+        </Decl>
+        <Decl assignable="Yes" id="0$id$w1265ab4b4" kind="Variable" name="r_tmp"
+              text-begin-col=""
+              text-begin-line=""
+              text-end-col="9"
+              text-end-line="13">
+            <Type id="0$id$w1265ab4b4a" name="float"/>
+        </Decl>
+        <Decl assignable="Yes" id="0$id$w1265ab4b5" kind="Variable" name="c"
+              text-begin-col=""
+              text-begin-line=""
+              text-end-col="9"
+              text-end-line="14">
+            <Type id="0$id$w1265ab4b5a" name="float"/>
+        </Decl>
+        <Decl assignable="Yes" id="0$id$w1265ab4b6" kind="Variable" name="s"
+              text-begin-col=""
+              text-begin-line=""
+              text-end-col="9"
+              text-end-line="15">
+            <Type id="0$id$w1265ab4b6a" name="float"/>
+        </Decl>
+        <Stmt id="0$id$w1265ab4b7" kind="If" text-begin-col="3" text-begin-line="17"
+              text-end-col="3"
+              text-end-line="28">
+            <Expr kind="Application">
+                <Expr kind="Var" name="$eq" old="no">
+                    <Note kind="freeVar" name="$eq"/>
+                </Expr>
+                <Args>
+                    <Expr id="0$id$w1265ab4b7aa" kind="Var" name="x_in" text-begin-col="6"
+                          text-begin-line="17"
+                          text-end-col="6"
+                          text-end-line="17">
+                        <Note assignable="no" decl-id="0$id$w1265ab4aa" free="no" kind="varRef" mutable="no"
+                              scope-id="0$id$w1265ab4"/>
+                        <Note kind="freeVar" name="x_in"/>
+                    </Expr>
+                    <Expr id="0$id$w1265ab4b7ab2" kind="Literal" literal-kind="Integer"
+                          text-begin-col="13"
+                          text-begin-line="17"
+                          text-end-col="13"
+                          text-end-line="17"
+                          value="0"/>
+                </Args>
+                <Note kind="freeVar" name="$eq"/>
+                <Note kind="freeVar" name="x_in"/>
+            </Expr>
+            <Stmt id="0$id$w1265ab4b7b1" kind="Block">
+                <Stmt id="0$id$w1265ab4b7b1a" kind="Assign" name="c" text-begin-col="4"
+                      text-begin-line="18"
+                      text-end-col="12"
+                      text-end-line="18">
+                    <Expr id="0$id$w1265ab4b7b1aa" kind="Literal" literal-kind="Real" text-begin-col="9"
+                          text-begin-line="18"
+                          text-end-col="9"
+                          text-end-line="18"
+                          value="1.0"/>
+                    <Note assignable="yes" decl-id="0$id$w1265ab4b5" free="no" kind="varMod" mutable="no"
+                          scope-id="0$id$w1265ab4">
+                        <Type id="0$id$w1265ab4b5a" name="float"/>
+                    </Note>
+                </Stmt>
+                <Stmt id="0$id$w1265ab4b7b1b1" kind="Assign" name="s" text-begin-col="4"
+                      text-begin-line="19"
+                      text-end-col="12"
+                      text-end-line="19">
+                    <Expr id="0$id$w1265ab4b7b1b1a" kind="Literal" literal-kind="Real" text-begin-col="9"
+                          text-begin-line="19"
+                          text-end-col="9"
+                          text-end-line="19"
+                          value="0.0"/>
+                    <Note assignable="yes" decl-id="0$id$w1265ab4b6" free="no" kind="varMod" mutable="no"
+                          scope-id="0$id$w1265ab4">
+                        <Type id="0$id$w1265ab4b6a" name="float"/>
+                    </Note>
+                </Stmt>
+            </Stmt>
+            <Stmt id="0$id$w1265ab4b7b2" kind="Block">
+                <Stmt id="0$id$w1265ab4b7b2a" kind="Assign" name="a" text-begin-col="4"
+                      text-begin-line="21"
+                      text-end-col="14"
+                      text-end-line="21">
+                    <Expr kind="Application">
+                        <Expr kind="Var" name="$mul" old="no">
+                            <Note kind="freeVar" name="$mul"/>
+                        </Expr>
+                        <Args>
+                            <Expr id="0$id$w1265ab4b7b2aaa" kind="Var" name="r" text-begin-col="9"
+                                  text-begin-line="21"
+                                  text-end-col="9"
+                                  text-end-line="21">
+                                <Note assignable="yes" decl-id="0$id$w1265ab3" free="no" kind="varRef" mutable="no"
+                                      scope-id="0$id$w1265a">
+                                    <Type id="0$id$w1265ab3a" name="float"/>
+                                </Note>
+                                <Note kind="freeVar" name="r"/>
+                            </Expr>
+                            <Expr id="0$id$w1265ab4b7b2aab2" kind="Var" name="r" text-begin-col="13"
+                                  text-begin-line="21"
+                                  text-end-col="13"
+                                  text-end-line="21">
+                                <Note assignable="yes" decl-id="0$id$w1265ab3" free="no" kind="varRef" mutable="no"
+                                      scope-id="0$id$w1265a">
+                                    <Type id="0$id$w1265ab3a" name="float"/>
+                                </Note>
+                                <Note kind="freeVar" name="r"/>
+                            </Expr>
+                        </Args>
+                        <Note kind="freeVar" name="$mul"/>
+                        <Note kind="freeVar" name="r"/>
+                    </Expr>
+                    <Note assignable="yes" decl-id="0$id$w1265ab4b2" free="no" kind="varMod" mutable="no"
+                          scope-id="0$id$w1265ab4">
+                        <Type id="0$id$w1265ab4b2a" name="float"/>
+                    </Note>
+                    <Note kind="freeVar" name="$mul"/>
+                    <Note kind="freeVar" name="r"/>
+                </Stmt>
+                <Stmt id="0$id$w1265ab4b7b2b1" kind="Assign" name="b" text-begin-col="4"
+                      text-begin-line="22"
+                      text-end-col="20"
+                      text-end-line="22">
+                    <Expr kind="Application">
+                        <Expr kind="Var" name="$mul" old="no">
+                            <Note kind="freeVar" name="$mul"/>
+                        </Expr>
+                        <Args>
+                            <Expr id="0$id$w1265ab4b7b2b1aa" kind="Var" name="x_in" text-begin-col="9"
+                                  text-begin-line="22"
+                                  text-end-col="9"
+                                  text-end-line="22">
+                                <Note assignable="no" decl-id="0$id$w1265ab4aa" free="no" kind="varRef" mutable="no"
+                                      scope-id="0$id$w1265ab4"/>
+                                <Note kind="freeVar" name="x_in"/>
+                            </Expr>
+                            <Expr id="0$id$w1265ab4b7b2b1ab2" kind="Var" name="x_in" text-begin-col="16"
+                                  text-begin-line="22"
+                                  text-end-col="16"
+                                  text-end-line="22">
+                                <Note assignable="no" decl-id="0$id$w1265ab4aa" free="no" kind="varRef" mutable="no"
+                                      scope-id="0$id$w1265ab4"/>
+                                <Note kind="freeVar" name="x_in"/>
+                            </Expr>
+                        </Args>
+                        <Note kind="freeVar" name="$mul"/>
+                        <Note kind="freeVar" name="x_in"/>
+                    </Expr>
+                    <Note assignable="yes" decl-id="0$id$w1265ab4b3" free="no" kind="varMod" mutable="no"
+                          scope-id="0$id$w1265ab4">
+                        <Type id="0$id$w1265ab4b3a" name="float"/>
+                    </Note>
+                    <Note kind="freeVar" name="$mul"/>
+                    <Note kind="freeVar" name="x_in"/>
+                </Stmt>
+                <Stmt id="0$id$w1265ab4b7b2b2" kind="Call" text-begin-col="4" text-begin-line="23"
+                      text-end-col="21"
+                      text-end-line="23">
+                    <Expr id="0$id$w1265ab4b7b2b2a" kind="Var" name="squareRoot" text-begin-col="4"
+                          text-begin-line="23"
+                          text-end-col="4"
+                          text-end-line="23">
+                        <Note assignable="yes" decl-id="0$id$w1265ab5" free="no" kind="varRef" mutable="no"
+                              scope-id="0$id$w1265a">
+                            <Type id="0$id$w1265ab5a" infer="true" kind="Procedure"/>
+                        </Note>
+                        <Note kind="freeVar" name="squareRoot"/>
+                    </Expr>
+                    <Args id="0$id$w1265ab4b7b2b2b1">
+                        <Expr kind="Application">
+                            <Expr kind="Var" name="$add" old="no">
+                                <Note kind="freeVar" name="$add"/>
+                            </Expr>
+                            <Args>
+                                <Expr id="0$id$w1265ab4b7b2b2b1aa" kind="Var" name="a" text-begin-col="15"
+                                      text-begin-line="23"
+                                      text-end-col="15"
+                                      text-end-line="23">
+                                    <Note assignable="yes" decl-id="0$id$w1265ab4b2" free="no" kind="varRef" mutable="no"
+                                          scope-id="0$id$w1265ab4">
+                                        <Type id="0$id$w1265ab4b2a" name="float"/>
+                                    </Note>
+                                    <Note kind="freeVar" name="a"/>
+                                </Expr>
+                                <Expr id="0$id$w1265ab4b7b2b2b1ab2" kind="Var" name="b" text-begin-col="19"
+                                      text-begin-line="23"
+                                      text-end-col="19"
+                                      text-end-line="23">
+                                    <Note assignable="yes" decl-id="0$id$w1265ab4b3" free="no" kind="varRef" mutable="no"
+                                          scope-id="0$id$w1265ab4">
+                                        <Type id="0$id$w1265ab4b3a" name="float"/>
+                                    </Note>
+                                    <Note kind="freeVar" name="b"/>
+                                </Expr>
+                            </Args>
+                            <Note kind="freeVar" name="$add"/>
+                            <Note kind="freeVar" name="a"/>
+                            <Note kind="freeVar" name="b"/>
+                        </Expr>
+                    </Args>
+                    <Note kind="freeVar" name="squareRoot"/>
+                    <Note kind="freeVar" name="$add"/>
+                    <Note kind="freeVar" name="a"/>
+                    <Note kind="freeVar" name="b"/>
+                </Stmt>
+                <Stmt id="0$id$w1265ab4b7b2b3" kind="Assign" name="r_tmp" text-begin-col="4"
+                      text-begin-line="24"
+                      text-end-col="18"
+                      text-end-line="24">
+                    <Expr id="0$id$w1265ab4b7b2b3a" kind="Var" name="sqrtx" text-begin-col="13"
+                          text-begin-line="24"
+                          text-end-col="13"
+                          text-end-line="24">
+                        <Note assignable="yes" decl-id="0$id$w1265ab2" free="no" kind="varRef" mutable="no"
+                              scope-id="0$id$w1265a">
+                            <Type id="0$id$w1265ab2a" name="float"/>
+                        </Note>
+                        <Note kind="freeVar" name="sqrtx"/>
+                    </Expr>
+                    <Note assignable="yes" decl-id="0$id$w1265ab4b4" free="no" kind="varMod" mutable="no"
+                          scope-id="0$id$w1265ab4">
+                        <Type id="0$id$w1265ab4b4a" name="float"/>
+                    </Note>
+                    <Note kind="freeVar" name="sqrtx"/>
+                </Stmt>
+                <Stmt id="0$id$w1265ab4b7b2b4" kind="Assign" name="c" text-begin-col="4"
+                      text-begin-line="25"
+                      text-end-col="18"
+                      text-end-line="25">
+                    <Expr kind="Application">
+                        <Expr kind="Var" name="$div" old="no">
+                            <Note kind="freeVar" name="$div"/>
+                        </Expr>
+                        <Args>
+                            <Expr id="0$id$w1265ab4b7b2b4aa" kind="Var" name="r" text-begin-col="9"
+                                  text-begin-line="25"
+                                  text-end-col="9"
+                                  text-end-line="25">
+                                <Note assignable="yes" decl-id="0$id$w1265ab3" free="no" kind="varRef" mutable="no"
+                                      scope-id="0$id$w1265a">
+                                    <Type id="0$id$w1265ab3a" name="float"/>
+                                </Note>
+                                <Note kind="freeVar" name="r"/>
+                            </Expr>
+                            <Expr id="0$id$w1265ab4b7b2b4ab2" kind="Var" name="r_tmp" text-begin-col="13"
+                                  text-begin-line="25"
+                                  text-end-col="13"
+                                  text-end-line="25">
+                                <Note assignable="yes" decl-id="0$id$w1265ab4b4" free="no" kind="varRef" mutable="no"
+                                      scope-id="0$id$w1265ab4">
+                                    <Type id="0$id$w1265ab4b4a" name="float"/>
+                                </Note>
+                                <Note kind="freeVar" name="r_tmp"/>
+                            </Expr>
+                        </Args>
+                        <Note kind="freeVar" name="$div"/>
+                        <Note kind="freeVar" name="r"/>
+                        <Note kind="freeVar" name="r_tmp"/>
+                    </Expr>
+                    <Note assignable="yes" decl-id="0$id$w1265ab4b5" free="no" kind="varMod" mutable="no"
+                          scope-id="0$id$w1265ab4">
+                        <Type id="0$id$w1265ab4b5a" name="float"/>
+                    </Note>
+                    <Note kind="freeVar" name="$div"/>
+                    <Note kind="freeVar" name="r"/>
+                    <Note kind="freeVar" name="r_tmp"/>
+                </Stmt>
+                <Stmt id="0$id$w1265ab4b7b2b5" kind="Assign" name="s" text-begin-col="4"
+                      text-begin-line="26"
+                      text-end-col="21"
+                      text-end-line="26">
+                    <Expr kind="Application">
+                        <Expr kind="Var" name="$div" old="no">
+                            <Note kind="freeVar" name="$div"/>
+                        </Expr>
+                        <Args>
+                            <Expr id="0$id$w1265ab4b7b2b5aa" kind="Var" name="x_in" text-begin-col="9"
+                                  text-begin-line="26"
+                                  text-end-col="9"
+                                  text-end-line="26">
+                                <Note assignable="no" decl-id="0$id$w1265ab4aa" free="no" kind="varRef" mutable="no"
+                                      scope-id="0$id$w1265ab4"/>
+                                <Note kind="freeVar" name="x_in"/>
+                            </Expr>
+                            <Expr id="0$id$w1265ab4b7b2b5ab2" kind="Var" name="r_tmp" text-begin-col="16"
+                                  text-begin-line="26"
+                                  text-end-col="16"
+                                  text-end-line="26">
+                                <Note assignable="yes" decl-id="0$id$w1265ab4b4" free="no" kind="varRef" mutable="no"
+                                      scope-id="0$id$w1265ab4">
+                                    <Type id="0$id$w1265ab4b4a" name="float"/>
+                                </Note>
+                                <Note kind="freeVar" name="r_tmp"/>
+                            </Expr>
+                        </Args>
+                        <Note kind="freeVar" name="$div"/>
+                        <Note kind="freeVar" name="x_in"/>
+                        <Note kind="freeVar" name="r_tmp"/>
+                    </Expr>
+                    <Note assignable="yes" decl-id="0$id$w1265ab4b6" free="no" kind="varMod" mutable="no"
+                          scope-id="0$id$w1265ab4">
+                        <Type id="0$id$w1265ab4b6a" name="float"/>
+                    </Note>
+                    <Note kind="freeVar" name="$div"/>
+                    <Note kind="freeVar" name="x_in"/>
+                    <Note kind="freeVar" name="r_tmp"/>
+                </Stmt>
+                <Stmt id="0$id$w1265ab4b7b2b6" kind="Assign" name="r" text-begin-col="4"
+                      text-begin-line="27"
+                      text-end-col="14"
+                      text-end-line="27">
+                    <Expr id="0$id$w1265ab4b7b2b6a" kind="Var" name="r_tmp" text-begin-col="9"
+                          text-begin-line="27"
+                          text-end-col="9"
+                          text-end-line="27">
+                        <Note assignable="yes" decl-id="0$id$w1265ab4b4" free="no" kind="varRef" mutable="no"
+                              scope-id="0$id$w1265ab4">
+                            <Type id="0$id$w1265ab4b4a" name="float"/>
+                        </Note>
+                        <Note kind="freeVar" name="r_tmp"/>
+                    </Expr>
+                    <Note assignable="yes" decl-id="0$id$w1265ab3" free="no" kind="varMod" mutable="no"
+                          scope-id="0$id$w1265a">
+                        <Type id="0$id$w1265ab3a" name="float"/>
+                    </Note>
+                    <Note kind="freeVar" name="r_tmp"/>
+                </Stmt>
+                <Note kind="freeVar" name="$mul"/>
+                <Note kind="freeVar" name="r"/>
+                <Note kind="freeVar" name="x_in"/>
+                <Note kind="freeVar" name="squareRoot"/>
+                <Note kind="freeVar" name="$add"/>
+                <Note kind="freeVar" name="a"/>
+                <Note kind="freeVar" name="b"/>
+                <Note kind="freeVar" name="sqrtx"/>
+                <Note kind="freeVar" name="$div"/>
+                <Note kind="freeVar" name="r_tmp"/>
+            </Stmt>
+            <Note kind="freeVar" name="$eq"/>
+            <Note kind="freeVar" name="x_in"/>
+            <Note kind="freeVar" name="$mul"/>
+            <Note kind="freeVar" name="r"/>
+            <Note kind="freeVar" name="squareRoot"/>
+            <Note kind="freeVar" name="$add"/>
+            <Note kind="freeVar" name="a"/>
+            <Note kind="freeVar" name="b"/>
+            <Note kind="freeVar" name="sqrtx"/>
+            <Note kind="freeVar" name="$div"/>
+            <Note kind="freeVar" name="r_tmp"/>
+        </Stmt>
+        <Note kind="freeVar" name="$eq"/>
+        <Note kind="freeVar" name="$mul"/>
+        <Note kind="freeVar" name="r"/>
+        <Note kind="freeVar" name="squareRoot"/>
+        <Note kind="freeVar" name="$add"/>
+        <Note kind="freeVar" name="sqrtx"/>
+        <Note kind="freeVar" name="$div"/>
+        <Output id="0$id$w1265ab4b1" port="ch_out" text-begin-col="33" text-begin-line="9"
+                text-end-col="37"
+                text-end-line="9">
+            <Expr id="0$id$w1265ab4b1a" kind="Var" name="c" text-begin-col="34"
+                  text-begin-line="9"
+                  text-end-col="34"
+                  text-end-line="9">
+                <Note assignable="yes" decl-id="0$id$w1265ab4b5" free="no" kind="varRef" mutable="no"
+                      scope-id="0$id$w1265ab4">
+                    <Type id="0$id$w1265ab4b5a" name="float"/>
+                </Note>
+                <Note kind="freeVar" name="c"/>
+            </Expr>
+            <Expr id="0$id$w1265ab4b1b1" kind="Var" name="s" text-begin-col="36"
+                  text-begin-line="9"
+                  text-end-col="36"
+                  text-end-line="9">
+                <Note assignable="yes" decl-id="0$id$w1265ab4b6" free="no" kind="varRef" mutable="no"
+                      scope-id="0$id$w1265ab4">
+                    <Type id="0$id$w1265ab4b6a" name="float"/>
+                </Note>
+                <Note kind="freeVar" name="s"/>
+            </Expr>
+        </Output>
+    </Action>
+    <Note kind="freeVar" name="$eq"/>
+    <Note kind="freeVar" name="$mul"/>
+    <Note kind="freeVar" name="$add"/>
+    <Note kind="freeVar" name="$div"/>
+    <Note kind="freeVar" name="$gt"/>
+    <Note kind="freeVar" name="$sub"/>
+</Actor>

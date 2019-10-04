@@ -1,0 +1,148 @@
+/*
+ * 2018-12-11 
+ * 
+ * Suleyman Savas, HH
+ * 
+ * Single core implementation of GoogLeNet first convolution layer.
+ * Input image is 224x224 RGB (3 input channels)
+ * The filter size is 7x7
+ * The number of filters is 64
+ * Stride is 2
+ * Output size is 112x112x64
+ */
+ /*while i < inputRowSize do
+	while j < inputColSize do
+		while k < numberOfFilters do
+			while m < filterRowSize do
+				while n < filterColSize do
+				
+				end
+			end
+		end
+	end
+end */
+
+// package cnnlayer;
+ 
+ actor conv1() ==> :
+ 
+ 	int filterRowSize   = 7;
+ 	int filterColSize   = 7;
+ 	int rowPadding      = 6; //(filterRowSize / 2) * 2;
+ 	int colPadding      = 6; //(filterColSize / 2) * 2;
+ 	int inputRowSize    = 230; //224 + rowPadding;
+ 	int inputColSize    = 230; //224 + colPadding;
+	int outputRowSize   = 115; // InputRowSize / 2;
+ 	int outputColSize   = 115; // InputColSize / 2;
+ 	int stride          = 2;
+ 	int numberOfFilters = 64;
+ 	int numberOfInputChannels = 3;
+ 	int filterCounter  := 0;
+ 	float applyResult  := 0;
+ 	float outputR      := 0;
+ 	float outputG      := 0;
+ 	float outputB      := 0;
+ 	float conv7_ret    := 0;
+ 	
+ 	int inputRowCounter := 0;
+ 	int inputColCounter := 0;
+ 	int colorIndex      := 0;
+ 	int applyFilterCounter := 0;
+ 	
+ 	List(type : List(type : List(type : float, size = inputColSize), size = inputRowSize), size = numberOfInputChannels) inputImage;
+ 	List(type : List(type : List(type : float, size = outputColSize), size = outputRowSize), size = numberOfFilters) output;
+ 	
+ 	__acc__applyFilter : action ==>
+	guard filterCounter < numberOfFilters
+	//var
+	//	List(type : List(type : List(type : int, size = filterColSize), size = filterRowSize), size = numberOfFilters) filters,
+	//	int i := 0,
+	//	float result := 0.0,
+	//	int j := 0,
+	//	float tmp
+	do
+	//println("applyFilter");
+	 /* 	while i < filterRowSize do
+	 		j := 0;
+			while j < filterColSize do
+				tmp    := filters[filterCounter][i][j] * inputImage[colorIndex][inputRowCounter + i][inputColCounter + j];
+				result := result + tmp;
+				j := j + 1;
+			end
+			i := i + 1;
+		end
+*/
+		conv7(filterCounter, inputImage[colorIndex][inputRowCounter][inputColCounter]);
+		applyResult := conv7_ret;
+		//applyResult := colorIndex;
+		//applyResult := result;
+		//applyFilterCounter := applyFilterCounter + 1;
+	end
+	 
+	 /* The conv7 procedure has a standard signature in the code generator */
+	procedure conv7(int filterCounter, float inputImageAddr)
+	var
+		List(type : List(type : List(type : int, size = filterColSize), size = filterRowSize), size = numberOfFilters) filters,
+		int i := 0,
+		float result := 0.0,
+		int j := 0,
+		float tmp
+	begin
+		while i < filterRowSize do
+	 		j := 0;
+			while j < filterColSize do
+				tmp    := filters[filterCounter][i][j] * inputImage[colorIndex][inputRowCounter + i][inputColCounter + j];
+				result := result + tmp;
+				j := j + 1;
+			end
+			i := i + 1;
+		end
+		conv7_ret := result;
+	end
+	
+ 	accumulate: action ==>
+	var
+		int rowIndex,
+		int colIndex
+ 	do
+ 	//println("accumulate, filterCounter:" + filterCounter);
+ 		if colorIndex = 0 then
+ 			outputR     := applyResult;
+			colorIndex  := colorIndex + 1;
+ 		else if colorIndex = 1 then
+ 			outputG     := applyResult;
+			colorIndex  := colorIndex + 1;
+ 		else if colorIndex = 2 then
+	 		outputB := applyResult;
+	 		rowIndex := inputRowCounter >> 1;
+	 		colIndex := inputColCounter >> 1;
+	 		output[filterCounter][rowIndex][colIndex] := outputR + outputG + outputB;
+	 		
+	 		inputColCounter := inputColCounter + stride;
+	 		
+	 		if(inputColCounter + filterColSize > inputColSize) then
+	 			inputColCounter := 0;
+	 			inputRowCounter := inputRowCounter + stride;
+			end
+			if(inputRowCounter + filterRowSize > inputRowSize) then
+				filterCounter   := filterCounter + 1;
+				inputRowCounter := 0;
+	 			//if(filterCounter = 64) then
+					//println("done- applyFilterCounter: " + applyFilterCounter);
+				//end
+			end
+			colorIndex := 0;
+		end
+		end
+		end
+ 	end
+ 	
+ 	schedule fsm state1:
+ 		state1(__acc__applyFilter) --> state2;
+ 		state2(accumulate)         --> state3;
+ 		state3(__acc__applyFilter) --> state4;
+ 		state4(accumulate)         --> state5;
+ 		state5(__acc__applyFilter) --> state6;
+ 		state6(accumulate)         --> state1;
+ 	end
+ end

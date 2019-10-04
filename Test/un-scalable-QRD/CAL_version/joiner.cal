@@ -1,0 +1,10 @@
+
+
+
+
+
+actor joiner () in1, in2, in3, in4 ==> output :
+	
+	action in1:[data1], in2:[data2], in3:[data3], in4:[data4] ==>
+	end
+end

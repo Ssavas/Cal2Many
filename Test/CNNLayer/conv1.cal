@@ -1,0 +1,166 @@
+/*
+ * 2018-12-11 
+ * 
+ * Suleyman Savas, HH
+ * 
+ * Single core implementation of GoogLeNet first convolution layer.
+ * Input image is 224x224 RGB (3 input channels)
+ * The filter size is 7x7
+ * The number of filters is 64
+ * Stride is 2
+ * Output size is 112x112x64
+ */
+ /*while i < inputRowSize do
+	while j < inputColSize do
+		while k < numberOfFilters do
+			while m < filterRowSize do
+				while n < filterColSize do
+				
+				end
+			end
+		end
+	end
+end */
+
+// package cnnlayer;
+ 
+ actor conv1() ==> :
+ 
+ 	int filterRowSize   = 7;
+ 	int filterColSize   = 7;
+ 	int rowPadding      = 6; //(filterRowSize / 2) * 2;
+ 	int colPadding      = 6; //(filterColSize / 2) * 2;
+ 	int inputRowSize    = 230; // 224 + rowPadding;
+ 	int inputColSize    = 230; // 224 + colPadding;
+ 	int stride          = 2;
+ 	int numberOfFilters = 64;
+ 	int numberOfInputChannels = 3;
+ 	int filterCounter  := 0;
+	float applyResult  := 0;
+ 	float outputR      := 0;
+ 	float outputG      := 0;
+ 	float outputB      := 0;
+	float conv7_ret    := 0;
+ 	
+ 	int inputRowCounter := 0;
+ 	int inputColCounter := 0;
+ 	
+ 	List(type : List(type : float, size = inputColSize), size = inputRowSize) inputImageR;
+ 	List(type : List(type : float, size = inputColSize), size = inputRowSize) inputImageG;
+ 	List(type : List(type : float, size = inputColSize), size = inputRowSize) inputImageB;
+ 	List(type : List(type : float, size = filterColSize), size = filterRowSize) patch;
+ 	List(type : List(type : List(type : float, size = inputColSize / 2), size = inputRowSize / 2), size = numberOfFilters) output;
+ 	
+ 	convR: action ==> 
+ 		guard filterCounter < numberOfFilters // inputRowCounter + filterRowSize < inputRowSize && inputColCounter + filterColSize < inputColSize
+ 		var
+ 			int i := 0,
+ 			int j := 0
+		do
+		//println("convR");
+			while i < filterRowSize do
+				j := 0;
+				while j < filterRowSize do
+					patch[i][j] := inputImageR[inputRowCounter + i][inputColCounter + j];
+					j := j + 1;
+				end
+				i := i + 1;
+			end
+	end
+ 
+ 	convG: action ==>
+ 		guard filterCounter < numberOfFilters // inputRowCounter + filterRowSize < inputRowSize && inputColCounter + filterColSize < inputColSize
+ 		var
+ 			int i := 0,
+ 			int j := 0
+		do
+		outputR := applyResult;
+		//println("convG");
+			while i < filterRowSize do
+				j := 0;
+				while j < filterRowSize do
+					patch[i][j] := inputImageG[inputRowCounter + i][inputColCounter + j];
+					j := j + 1;
+				end
+				i := i + 1;
+			end
+ 	end
+ 	
+ 	convB: action ==>
+ 		guard filterCounter < numberOfFilters //inputRowCounter + filterRowSize < inputRowSize && inputColCounter + filterColSize < inputColSize
+ 		var
+ 			int i := 0,
+ 			int j := 0
+		do
+		outputG := applyResult;
+		//println("convB");
+			while i < filterRowSize do
+				j := 0;
+				while j < filterRowSize do
+					patch[i][j] := inputImageG[inputRowCounter + i][inputColCounter + j];
+					j := j + 1;
+				end
+				i := i + 1;
+			end
+ 	end
+
+	__acc__applyFilter : action ==>
+	var
+		List(type : List(type : List(type : int, size = filterColSize), size = filterRowSize), size = numberOfFilters) filters
+		//int i := 0,
+		//float result := 0.0,
+		//int j := 0,
+		//float tmp
+	do
+	//println("applyFilter");
+		/*while i < filterRowSize do
+			while j < filterColSize do
+				tmp    := filters[filterCounter][i][j] * patch[i][j];
+				result := result + tmp;
+				j := j + 1;
+			end
+			i := i + 1;
+		end*/
+		
+		conv7(filterCounter, patch);
+		applyResult := conv7_ret;
+	end
+	 
+	procedure conv7(float counter, List(type:List(type:float, size=7), size=7) patch)
+	begin
+	end
+	
+ 	accumulate: action ==>
+	var
+		int rowIndex,
+		int colIndex
+ 	do
+ 	//println("accumulate, filterCounter:" + filterCounter);
+ 		rowIndex := inputRowCounter / 2;
+ 		colIndex := inputColCounter / 2;
+		outputB := applyResult;
+ 		output[filterCounter][rowIndex][colIndex] := outputR + outputB + outputG;
+ 		inputRowCounter := inputRowCounter + stride;
+ 		if(inputRowCounter + filterRowSize >= inputRowSize) then
+ 			inputRowCounter := 0;
+ 			inputColCounter := inputColCounter + stride;
+		end
+		if(inputColCounter + filterRowSize >= inputColSize) then
+			filterCounter   := filterCounter + 1;
+			inputColCounter := 0;
+/* 			if(filterCounter = 64) then
+				println("done");
+			end*/
+		end
+ 	end
+ 	
+ 	schedule fsm state1:
+ 		state1(convR)		 --> state15;
+ 		state15(__acc__applyFilter) --> state2;
+ 		state2(convG) 		 --> state25;
+ 		state25(__acc__applyFilter) --> state3;
+ 		state3(convB)		 --> state4;
+ 		state4(__acc__applyFilter)	 --> state5;
+ 		state5(accumulate) 	 --> state1;
+ 	end
+ end

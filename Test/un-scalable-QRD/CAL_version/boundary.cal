@@ -1,0 +1,94 @@
+
+
+
+actor boundary ()ch_in ==> ch_out :
+	
+	float acc__SquareRoot_ret := 0.0;
+	float r := 0.0;
+	
+
+	// to test the Chisel code generator, "__acc__" is added to the name of the following action
+	__acc__: action ch_in:[x_in] ==> ch_out:[c,s]
+	var
+		float a,
+		float b,
+		float r_tmp,
+		float c,
+		float testFunction_ret,
+		float s
+	do
+		if x_in = 0 then
+			c := 1.0;
+			s := 0.0;
+		else
+			a := r * r;
+			b := x_in * x_in;
+			SquareRoot(a + b);
+			r_tmp := acc__SquareRoot_ret;
+			c := r / r_tmp;
+			s := x_in / r_tmp;
+			r := r_tmp;
+		end
+		
+		//Test IfExp
+		c := if x_in = 1.0 then 5.0 else 3.0 end;
+		
+		//Test greater equal
+		if x_in >= 2.0 then
+			c:= lshift(c, 2);
+		end
+		
+		//Test less equal
+		if x_in <= 4.0 then
+			s:= rshift(s, 2);
+		end
+		
+		//Test negate
+		c := -s;
+		
+		//Test not equal
+		if c != s then
+			c := s;
+		end
+		
+		
+		//Test logical OR
+		if (c = s) or (c = 2.0) then
+			//Test not
+			c := not s;
+		end
+		
+		//Test plus
+		c := 1.0 + x_in;
+		
+		//Test minus
+		c := r - r_tmp;
+		s := c - s;
+		r := (c + s) - r_tmp;
+		c := (r - r_tmp) * 2.0;
+		
+		//Test switch
+		//switch(c)
+		
+		// Test statement call 
+		testFunction(c, s, r_tmp);
+		
+		
+	end
+	
+    procedure acc__SquareRoot(float ns)
+        var
+                float x := ns,
+                float y := 1.0,
+                //float e := 0.000001
+                float e := 0.000001
+        begin
+                while (x - y > e)
+                do
+                        x := (x + y)/2;
+                        y := ns / x;
+                end
+                acc__SquareRoot_ret := x;
+        end
+	
+end

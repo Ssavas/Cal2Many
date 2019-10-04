@@ -1,0 +1,83 @@
+/*
+ * The actor that performs the convolution.
+ * It receives the image data from the splitter
+ * and applies the filters. Sends the results to the combiner (maybe it shouldn't).
+ * 
+ * Read the input 49 times, (apply a filter, send the result) x 64.
+ * Author: Süleyman Savas
+ * 2019-02-20
+ * Halmstad University
+ * 
+ */
+ 
+ 
+ 
+ 
+ //package cnnlayer;
+ 
+actor conv() ==> float ResultOut:
+ 
+ 	int filterRowSize   = 7;
+ 	int filterColSize   = 7;
+ 	int numberOfFilters = 64;
+ 	int filterCounter   := 0;
+ 	int inputColCounter := 0;
+ 	int inputRowCounter := 0;
+ 	int stride           = 2;
+ 	int inputColSize    = 230;//230; //224 + colPadding;
+ 	int inputRowSize    = 230;//230;
+	float result;
+ 	
+ 	List(type : List(type: float, size = inputColSize), size = inputRowSize)  inputImage;
+ /*	  
+ 	applyFilter : action ==> ResultOut:[result]
+ 	guard filterCounter < numberOfFilters and (inputRowCounter + filterRowSize <= inputRowSize)
+ 	var
+		List(type : List(type : List(type : int, size = filterColSize), 
+			size = filterRowSize), size = numberOfFilters) filters,
+		int i := 0,
+		float result := 0.0,
+		int j := 0,
+		float tmp
+	do
+		//println('applyFilter');
+	  	while i < filterRowSize do
+	 		j := 0;
+			while j < filterColSize do
+				tmp    := filters[filterCounter][i][j] * inputImage[inputRowCounter + i][inputColCounter + j];
+				result := result + tmp;
+				j := j + 1;
+			end
+			i := i + 1;
+		end
+		filterCounter := filterCounter + 1;
+ 	end
+ 	*/
+	
+	__acc__applyFilter : action ==> ResultOut:[result]
+	guard filterCounter < numberOfFilters and (inputRowCounter + filterRowSize <= inputRowSize)
+	do
+		conv7(filterCounter, inputImage[inputRowCounter + i][inputColCounter + j]);
+		result := conv7_ret;
+		//filterCounter := filterCounter + 1;
+	end
+	
+ 	applyFilter_done : action ==>
+ 	guard (inputRowCounter + filterRowSize <= inputRowSize)
+ 	do
+ 		filterCounter   := 0;
+ 		inputColCounter := inputColCounter + stride;
+ 		
+ 		if(inputColCounter + filterColSize > inputColSize) then
+ 			inputRowCounter := inputRowCounter + stride;
+ 			inputColCounter := 0;
+		end
+ 	end
+ 	
+ 	priority
+ 		applyFilter > applyFilter_done;
+ 	end
+ end
+ 
+ 
+  	

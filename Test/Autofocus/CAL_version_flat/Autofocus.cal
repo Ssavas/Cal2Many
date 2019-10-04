@@ -1,0 +1,715 @@
+/*
+ * 	Autofocus calculation on single actor using floating point values with a flat cubic action
+ *  Süleyman Savas 
+ *  2018-02-07
+ *  School of ITE, HH
+ * 
+ */
+ 
+ //package autofocus;
+ 
+ 
+ actor autofocus () ==> :
+	 
+	float SquareRoot_result;
+	int NOF_PIXELS_KERNEL = 36;
+	int NOF_PIXELS        = 216;
+	float p0_pos_real;
+	float p0_pos_imag;
+	float p1_pos_real;
+	float p1_pos_imag;
+	float p2_pos_real;
+	float p2_pos_imag;
+	float p3_pos_real;
+	float p3_pos_imag;
+	float p0_val_real;
+	float p0_val_imag;
+	float p1_val_real;
+	float p1_val_imag;
+	float p2_val_real;
+	float p2_val_imag;
+	float p3_val_real;
+	float p3_val_imag;	
+	float p03_real;
+	float p03_imag;
+	int range1_i        := 0;
+	int range1_counter  := 0;
+	int range2_i        := 0;
+	int range2_counter  := 0;
+	int ra_result_index := 0;
+	int rb_result_index := 0;
+	
+	int beam1_i           := 0;
+	int beam1_counter     := 0;
+	int beam2_i           := 0;
+	int beam2_counter     := 0;
+	int ba_result_index   := 0;
+	int bb_result_index   := 0;
+	
+	int inputData_index := 0;
+	float total_sum     := 0.0;
+	
+	
+	// Format of the pa matrix = pa[data_index][0 = pos, 1 = val][0 = real, 1 = imag]	
+	List(type : List(type : List(type : float, size = 2), size = 2), size = NOF_PIXELS_KERNEL) pa; 
+	List(type : List(type : List(type : float, size = 2), size = 2), size = NOF_PIXELS_KERNEL) pb;
+	
+	List(type : List(type : List(type : float, size = 2), size = 2), size = NOF_PIXELS_KERNEL) ra;
+	List(type : List(type : List(type : float, size = 2), size = 2), size = NOF_PIXELS_KERNEL) rb;
+	
+	List(type : List(type : List(type : float, size = 2), size = 2), size = NOF_PIXELS_KERNEL) ba;
+	List(type : List(type : List(type : float, size = 2), size = 2), size = NOF_PIXELS_KERNEL) bb;
+	
+	/*List(type : List(type : List(type : float, size = 2), size = 2), size = NOF_PIXELS) inputData1 := [
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], 
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]],
+		[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]]		
+	];
+	
+	List(type : List(type : List(type : float, size = 2), size = 2), size = NOF_PIXELS) inputData2;
+	*/
+	
+	
+	set_pa_pb : action ==>
+	guard inputData_index < NOF_PIXELS
+	var
+		int j
+	do
+		j := 0;
+		//println("set_pa_pb - " + inputData_index);
+		while j < NOF_PIXELS_KERNEL do
+			pa[j][0][0] := 1.0; //inputData1[inputData_index + j][0][0];	// pos.real
+			pa[j][0][1] := 1.0; //inputData1[inputData_index + j][0][1];	// pos.imag
+			pa[j][1][0] := 1.0; //inputData1[inputData_index + j][1][0];	// val.real
+			pa[j][1][1] := 1.0; //inputData1[inputData_index + j][1][1];	// val.imag
+			
+			pb[j][0][0] := 1.0; //inputData2[inputData_index + j][0][0];	// pos.real
+			pb[j][0][1] := 1.0; //inputData2[inputData_index + j][0][1];	// pos.imag
+			pb[j][1][0] := 1.0; //inputData2[inputData_index + j][1][0];	// val.real
+			pb[j][1][1] := 1.0; //inputData2[inputData_index + j][1][1];	// val.imag
+			
+			j := j + 1;
+		end
+		
+		//if inputData_index < NOF_PIXELS then
+			inputData_index := inputData_index + NOF_PIXELS_KERNEL;
+		//end
+	end
+	
+	// The following action can be used for running the autofocus in a loop
+	/*set_pa_pb_done : action ==>
+	do
+		inputData_index := 0;
+		total_sum       := 0.0;
+	end
+	*/
+	
+ 	set_ra_rb_pos : action ==>
+ 	var
+ 		int i := 0
+ 	do
+ 		//println("set_ra_rb_pos");
+ 		while i < 36 do
+ 			rb[i][0][0] := pb[i][0][0];	// pos.real
+ 			rb[i][0][1] := pb[i][0][1]; // pos.imag
+ 			ra[i][0][0] := pa[i][0][0];	// pos.real
+ 			ra[i][0][1] := pa[i][0][1]; // pos.imag
+ 			i           := i + 6;
+ 			
+ 			range1_i := 0;		// let the range loops run
+ 			range2_i := 0;
+ 		end
+ 	end
+	
+	/* The first for loop which calls cubic() */
+ 	range_int_loop_1 : action ==>
+ 	guard range1_i < 36
+ 	do
+ 		//println("range_int_loop_1 - " + range1_i);
+		p0_pos_real := pa[range1_i + range1_counter + 0][0][0];
+		p0_pos_imag := pa[range1_i + range1_counter + 0][0][1];
+		p1_pos_real := pa[range1_i + range1_counter + 1][0][0];
+		p1_pos_imag := pa[range1_i + range1_counter + 1][0][1];
+		p2_pos_real := pa[range1_i + range1_counter + 2][0][0];
+		p2_pos_imag := pa[range1_i + range1_counter + 2][0][1];
+		p3_pos_real := pa[range1_i + range1_counter + 3][0][0];
+		p3_pos_imag := pa[range1_i + range1_counter + 3][0][1];
+		
+		
+		range1_counter := range1_counter + 1;
+		if range1_counter = 3 then
+			range1_counter := 0;
+			range1_i := range1_i + 6;
+		end
+ 	end
+ 	
+ 	range_int_loop_1_done : action ==> do //println("range_int_loop_1_done"); 
+ 	end
+ 	
+ 	/* The second for loop which calls cubic() */
+ 	range_int_loop_2 : action ==>
+ 	guard range2_i < 36
+ 	do 
+ 		//println("range_int_loop_2 - " + range2_i);
+ 		p0_pos_real := pb[range2_i + range2_counter + 0][0][0];
+		p0_pos_imag := pb[range2_i + range2_counter + 0][0][1];
+		p1_pos_real := pb[range2_i + range2_counter + 1][0][0];
+		p1_pos_imag := pb[range2_i + range2_counter + 1][0][1];
+		p2_pos_real := pb[range2_i + range2_counter + 2][0][0];
+		p2_pos_imag := pb[range2_i + range2_counter + 2][0][1];
+		p3_pos_real := pb[range2_i + range2_counter + 3][0][0];
+		p3_pos_imag := pb[range2_i + range2_counter + 3][0][1];
+		
+		
+		range2_counter := range2_counter + 1;
+		if range2_counter = 3 then
+			range2_counter := 0;
+			range2_i := range2_i + 6;
+		end
+ 	end
+ 	
+ 	range_int_loop_2_done : action ==> do //println("range_int_loop_2_done"); 
+ 	end
+ 	
+ 	/* Save the cubic ra results into ra.val */
+ 	store_ra_results : action ==>
+ 	do
+ 		//println("store_ra_results");
+ 		ra[ra_result_index][1][0] := p03_real;	// ra.val.real
+ 		ra[ra_result_index][1][1] := p03_imag; // ra.val.imag
+ 		
+ 		if ra_result_index < 18 then 
+ 			ra_result_index := ra_result_index + 1;
+		else
+			ra_result_index := 0;
+		end		
+ 	end
+ 	
+  	/* Save the cubic rb results into ra.val */
+ 	store_rb_results : action ==>
+ 	do
+ 		//println("store_rb_results");
+ 		rb[rb_result_index][1][0] := p03_real;	// ra.val.real
+ 		rb[rb_result_index][1][1] := p03_imag; // ra.val.imag
+ 		
+ 		if rb_result_index < 18 then 
+ 			rb_result_index := rb_result_index + 1;
+		else
+			rb_result_index := 0;
+		end		
+ 	end
+
+	__acc__cubic : action ==>
+	
+	/* Should be called once to calculate for 1 pixel 
+	 * 
+	 * This action will use 12 floating-point inputs with each call.
+	 * 1st pixel inputs : p0, p1, d0, d1
+	 * 2nd pixel inputs : p1, p2, d1, d2
+	 * 3rd pixel inputs : p2, p3, d2, d3
+	 * 4th pixel inputs : p01, p12, d0, d2
+	 * 5th pixel inputs : p12, p23, d1, d3
+	 * 6th pixel inputs : p02, p13, d0, d3
+	 * 
+	 * */
+	 
+	var
+		float tmp0_real,
+		float tmp0_imag,
+		float tmp00,
+		float tmp01,
+		float tmp02,
+		float tmp1_real,
+		float tmp1_imag,
+		float tmp2_real,
+		float tmp2_imag,
+		float tmp3_real,
+		float tmp3_imag,
+		float d0_real,
+		float d0_imag,
+		float d1_real,
+		float d1_imag,
+		float d2_real,
+		float d2_imag,
+		float d3_real,
+		float d3_imag,
+		float p01_real,
+		float p01_imag,
+		float p12_real,
+		float p12_imag,
+		float p23_real,
+		float p23_imag,
+		float p02_real,
+		float p02_imag,
+		float p13_real,
+		float p13_imag,
+		float x_int_real = 1.0,
+		float x_int_imag = 1.0,
+		float denom
+	do
+		//println("cubic");
+		
+		/* d calculation */
+		d0_real := x_int_real - p0_pos_real;
+		d0_imag := x_int_imag - p0_pos_imag;
+		d1_real := x_int_real - p1_pos_real;
+		d1_imag := x_int_imag - p1_pos_imag;
+		d2_real := x_int_real - p2_pos_real;
+		d2_imag := x_int_imag - p2_pos_imag;
+		d3_real := x_int_real - p3_pos_real;
+		d3_imag := x_int_imag - p3_pos_imag;
+		
+		
+		/* p01 */	
+		// C_mul1
+		tmp00     := p0_pos_real * d1_real;
+		tmp01     := p0_val_imag * d1_imag;
+		tmp0_real := tmp00 - tmp01;
+		tmp00     := p0_val_real * d1_imag;
+		tmp01     := p0_val_imag * d1_real;
+		tmp0_imag := tmp00 + tmp01;
+		
+		// C_mul2
+		tmp00     := p1_pos_real * d0_real;
+		tmp01     := p1_val_imag * d0_imag;
+		tmp1_real := tmp00 - tmp01;
+		tmp00     := p1_val_real * d0_imag;
+		tmp01     := p1_val_imag * d0_real;
+		tmp1_imag := tmp00 + tmp01;
+		
+		// C_sub1
+		tmp2_real := tmp0_real - tmp1_real;
+		tmp2_imag := tmp0_imag - tmp1_imag;
+		
+		// C_sub2
+		tmp3_real := p0_pos_real - p1_pos_real;
+		tmp3_imag := p0_pos_imag - p1_pos_imag;
+		
+		// C_div
+		tmp00         := tmp3_real * tmp3_real;
+		tmp01         := tmp3_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		denom         := tmp02 + 0.000000000000000000012;
+		tmp00         := tmp2_real * tmp3_real;
+		tmp01         := tmp2_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		p01_real      := tmp02 / denom;
+		tmp00         := tmp2_imag * tmp3_real;
+		tmp01         := tmp2_real * tmp3_imag;
+		tmp02         := tmp00 -tmp01;
+		p01_imag      := tmp02 / denom;
+		/* end of p01 */
+
+		/* p12 */
+		// C_mul1
+		tmp00     := p1_val_real * d2_real;
+		tmp01     := p1_val_imag * d2_imag;
+		tmp0_real := tmp00 - tmp01;
+		tmp00     := p1_val_real * d2_imag;
+		tmp01     := p1_val_imag * d2_real;
+		tmp0_imag := tmp00 + tmp01;
+		
+		// C_mul2
+		tmp00     := p2_val_real * d1_real;
+		tmp01     := p2_val_imag * d1_imag;
+		tmp1_real := tmp00 - tmp01;
+		tmp00     := p2_val_real * d1_imag;
+		tmp01     := p2_val_imag * d1_real;
+		tmp1_imag := tmp00 + tmp01;
+		
+		// C_sub1
+		tmp2_real := tmp0_real - tmp1_real;
+		tmp2_imag := tmp0_imag - tmp1_imag;
+		
+		// C_sub2
+		tmp3_real := p1_pos_real - p2_pos_real;
+		tmp3_imag := p1_pos_imag - p2_pos_imag;
+		
+		// C_div
+		tmp00         := tmp3_real * tmp3_real;
+		tmp01         := tmp3_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		denom         := tmp02 + 0.000000000000000000012;
+		tmp00         := tmp2_real * tmp3_real;
+		tmp01         := tmp2_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		p12_real      := tmp02 / denom;
+		tmp00         := tmp2_imag * tmp3_real;
+		tmp01         := tmp2_real * tmp3_imag;
+		tmp02         := tmp00 -tmp01;
+		p12_imag      := tmp02 / denom;
+		/* end of p12 */
+		
+		/* p23 */
+		// C_mul1
+		tmp00     := p2_val_real * d3_real;
+		tmp01     := p2_val_imag * d3_imag;
+		tmp0_real := tmp00 - tmp01;
+		tmp00     := p2_val_real * d3_imag;
+		tmp01     := p2_val_imag * d3_real;
+		tmp0_imag := tmp00 + tmp01;
+		
+		// C_mul2
+		tmp00     := p3_val_real * d2_real;
+		tmp01     := p3_val_imag * d2_imag;
+		tmp1_real := tmp00 - tmp01;
+		tmp00     := p3_val_real * d2_imag;
+		tmp01     := p3_val_imag * d2_real;
+		tmp1_imag := tmp00 + tmp01;
+		
+		// C_sub1
+		tmp2_real := tmp0_real - tmp1_real;
+		tmp2_imag := tmp0_imag - tmp1_imag;
+		
+		// C_sub2
+		tmp3_real := p2_pos_real - p3_pos_real;
+		tmp3_imag := p2_pos_imag - p3_pos_imag;
+		
+		// C_div
+		tmp00         := tmp3_real * tmp3_real;
+		tmp01         := tmp3_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		denom         := tmp02 + 0.000000000000000000012;
+		tmp00         := tmp2_real * tmp3_real;
+		tmp01         := tmp2_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		p23_real      := tmp02 / denom;
+		tmp00         := tmp2_imag * tmp3_real;
+		tmp01         := tmp2_real * tmp3_imag;
+		tmp02         := tmp00 -tmp01;
+		p23_imag      := tmp02 / denom;
+		/* end of p23 */
+		
+		/* p02 */
+		// C_mul1
+		tmp00     := p01_real * d2_real;
+		tmp01     := p01_imag * d2_imag;
+		tmp0_real := tmp00 - tmp01;
+		tmp00     := p01_real * d2_imag;
+		tmp01     := p01_imag * d2_real;
+		tmp0_imag := tmp00 + tmp01;
+		
+		// C_mul2
+		tmp00     := p12_real * d0_real;
+		tmp01     := p12_imag * d0_imag;
+		tmp1_real := tmp00 - tmp01;
+		tmp00     := p12_real * d0_imag;
+		tmp01     := p12_imag * d0_real;
+		tmp1_imag := tmp00 + tmp01;
+		
+		// C_sub1
+		tmp2_real := tmp0_real - tmp1_real;
+		tmp2_imag := tmp0_imag - tmp1_imag;
+		
+		// C_sub2
+		tmp3_real := p0_pos_real - p3_pos_real;
+		tmp3_imag := p0_pos_imag - p3_pos_imag;
+		
+		// C_div
+		tmp00         := tmp3_real * tmp3_real;
+		tmp01         := tmp3_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		denom         := tmp02 + 0.000000000000000000012;
+		tmp00         := tmp2_real * tmp3_real;
+		tmp01         := tmp2_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		p02_real      := tmp02 / denom;
+		tmp00         := tmp2_imag * tmp3_real;
+		tmp01         := tmp2_real * tmp3_imag;
+		tmp02         := tmp00 -tmp01;
+		p02_imag      := tmp02 / denom;
+		/* end of p02 */
+		
+		/* p13 */
+		// Set the inputs for the current state
+		// C_mul1
+		tmp00     := p12_real * d3_real;
+		tmp01     := p12_imag * d3_imag;
+		tmp0_real := tmp00 - tmp01;
+		tmp00     := p12_real * d3_imag;
+		tmp01     := p12_imag * d3_real;
+		tmp0_imag := tmp00 + tmp01;
+		
+		// C_mul2
+		tmp00     := p23_real * d1_real;
+		tmp01     := p23_imag * d1_imag;
+		tmp1_real := tmp00 - tmp01;
+		tmp00     := p23_real * d1_imag;
+		tmp01     := p23_imag * d1_real;
+		tmp1_imag := tmp00 + tmp01;
+		
+		// C_sub1
+		tmp2_real := tmp0_real - tmp1_real;
+		tmp2_imag := tmp0_imag - tmp1_imag;
+		
+		// C_sub2
+		tmp3_real := p1_pos_real - p3_pos_real;
+		tmp3_imag := p1_pos_imag - p3_pos_imag;
+		
+		// C_div
+		tmp00         := tmp3_real * tmp3_real;
+		tmp01         := tmp3_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		denom         := tmp02 + 0.000000000000000000012;
+		tmp00         := tmp2_real * tmp3_real;
+		tmp01         := tmp2_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		p13_real      := tmp02 / denom;
+		tmp00         := tmp2_imag * tmp3_real;
+		tmp01         := tmp2_real * tmp3_imag;
+		tmp02         := tmp00 -tmp01;
+		p13_imag      := tmp02 / denom;
+		/* end of p13 */
+		
+		/* p03 */
+		// C_mul1
+		tmp00     := p02_real * d3_real;
+		tmp01     := p02_imag * d3_imag;
+		tmp0_real := tmp00 - tmp01;
+		tmp00     := p02_real * d3_imag;
+		tmp01     := p02_imag * d3_real;
+		tmp0_imag := tmp00 + tmp01;
+		
+		// C_mul2
+		tmp00     := p13_real * d0_real;
+		tmp01     := p13_imag * d0_imag;
+		tmp1_real := tmp00 - tmp01;
+		tmp00     := p13_real * d0_imag;
+		tmp01     := p13_imag * d0_real;
+		tmp1_imag := tmp00 + tmp01;
+		
+		// C_sub1
+		tmp2_real := tmp0_real - tmp1_real;
+		tmp2_imag := tmp0_imag - tmp1_imag;
+		
+		// C_sub2
+		tmp3_real := p0_pos_real - p3_pos_real;
+		tmp3_imag := p0_pos_imag - p3_pos_imag;
+		
+		// C_div
+		tmp00         := tmp3_real * tmp3_real;
+		tmp01         := tmp3_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		denom         := tmp02 + 0.000000000000000000012;
+		tmp00         := tmp2_real * tmp3_real;
+		tmp01         := tmp2_imag * tmp3_imag;
+		tmp02         := tmp00 + tmp01;
+		p03_real      := tmp02 / denom;
+		tmp00         := tmp2_imag * tmp3_real;
+		tmp01         := tmp2_real * tmp3_imag;
+		tmp02         := tmp00 -tmp01;
+		p03_imag      := tmp02 / denom;
+		/* end of p03 */
+		
+	end
+
+
+	set_ba_bb_pos : action ==>
+ 	var
+ 		int i = 0
+ 	do
+ 		//println("set_ra_rb_pos");
+ 		while i < 6 do
+ 			ba[i][0][0] := ra[i][0][0];	// pos.real
+ 			ba[i][0][1] := ra[i][0][1]; // pos.imag
+ 			bb[i][0][0] := rb[i][0][0];	// pos.real
+ 			bb[i][0][1] := rb[i][0][1]; // pos.imag
+ 			i           := i + 1;
+ 			
+ 			beam1_i := 0;		// let the range loops run
+ 			beam2_i := 0;
+ 		end
+ 	end
+	
+	/* The first for loop which calls cubic() */
+ 	beam_int_loop_1 : action ==>
+ 	guard beam1_i < 3
+ 	do
+ 		//println("beam_int_loop_1 - " + beam1_i);
+		p0_pos_real := ra[beam1_i + beam1_counter + 0][0][0];
+		p0_pos_imag := ra[beam1_i + beam1_counter + 0][0][1];
+		p1_pos_real := ra[beam1_i + beam1_counter + 3][0][0];
+		p1_pos_imag := ra[beam1_i + beam1_counter + 3][0][1];
+		p2_pos_real := ra[beam1_i + beam1_counter + 6][0][0];
+		p2_pos_imag := ra[beam1_i + beam1_counter + 6][0][1];
+		p3_pos_real := ra[beam1_i + beam1_counter + 9][0][0];
+		p3_pos_imag := ra[beam1_i + beam1_counter + 9][0][1];
+		
+		
+		beam1_counter := beam1_counter + 3;
+		if beam1_counter = 9 then
+			beam1_counter := 0;
+			beam1_i       := beam1_i + 1;
+		end
+ 	end
+ 
+ 	beam_int_loop_1_done : action ==> do //println("beam_int_loop_1_done"); 
+	end
+ 	
+ 	/* The second for loop which calls cubic() */
+ 	beam_int_loop_2 : action ==>
+ 	guard beam2_i < 3
+ 	do 
+ 		//println("beam_int_loop_2 - " + beam2_i);
+ 		p0_pos_real := rb[beam2_i + beam2_counter + 0][0][0];
+		p0_pos_imag := rb[beam2_i + beam2_counter + 0][0][1];
+		p1_pos_real := rb[beam2_i + beam2_counter + 3][0][0];
+		p1_pos_imag := rb[beam2_i + beam2_counter + 3][0][1];
+		p2_pos_real := rb[beam2_i + beam2_counter + 6][0][0];
+		p2_pos_imag := rb[beam2_i + beam2_counter + 6][0][1];
+		p3_pos_real := rb[beam2_i + beam2_counter + 9][0][0];
+		p3_pos_imag := rb[beam2_i + beam2_counter + 9][0][1];
+		
+		
+		beam2_counter := beam2_counter + 3;
+		if beam2_counter = 9 then
+			beam2_counter := 0;
+			beam2_i       := beam2_i + 1;
+		end
+ 	end
+ 	
+ 	beam_int_loop_2_done : action ==> do //println("beam_int_loop_2_done"); 
+	end
+ 	
+ 	/* Save the cubic ba results into ba.val */
+ 	store_ba_results : action ==>
+ 	do
+ 		//println("store_ba_results - " + ba_result_index);
+ 		ba[ba_result_index][1][0] := p03_real;	// ba.val.real
+ 		ba[ba_result_index][1][1] := p03_imag; // ba.val.imag
+ 		
+		ba_result_index   := ba_result_index + 3;
+		if ba_result_index = 9 then
+			ba_result_index := 1;
+		else if ba_result_index = 10 then
+			ba_result_index := 2;
+		else if ba_result_index = 11 then
+			ba_result_index := 0;
+		end
+		end
+		end
+ 	end
+ 	
+  	/* Save the cubic bb results into bb.val */
+ 	store_bb_results : action ==>
+ 	do
+ 		//println("store_bb_results");
+ 		bb[bb_result_index][1][0] := p03_real;	// bb.val.real
+ 		bb[bb_result_index][1][1] := p03_imag; // bb.val.imag
+ 		
+
+		bb_result_index   := bb_result_index + 3;
+		if bb_result_index = 9 then
+			bb_result_index := 1;
+		else if bb_result_index = 10 then
+			bb_result_index := 2;
+		else if bb_result_index = 11 then
+			bb_result_index := 0;
+		end
+		end
+		end
+ 	end
+ 		
+	
+	correlation : action ==>
+	var
+		float tmp1,
+		float sum,
+		int i
+	do
+		//println("correlation");
+		i   := 0;
+		sum := 0.0;
+		while i < 9 do
+			SquareRoot(ba[i][1][0] * ba[i][1][0] + ba[i][1][1] * ba[i][1][1]);
+			tmp1 := SquareRoot_result;
+			SquareRoot(bb[i][1][0] * bb[i][1][0] + bb[i][1][1] * bb[i][1][1]);
+			
+			sum := sum + (tmp1 * tmp1 * SquareRoot_result * SquareRoot_result);
+			
+			i := i + 1;
+		end
+		
+		total_sum := total_sum + sum;
+		//println("total_sum: " + total_sum);
+	end
+	
+	procedure SquareRoot(float ns)
+	var
+		float i := 0.0,
+		float x1,
+		float x2,
+		int j := 0
+	begin
+		while ((i*i) <= ns)
+		do
+			i := i + 0.1;
+		end
+		
+		x1 := i;
+		
+		while (j < 10)
+		do
+			x2 := ns;
+			x2 := x2 / x1;
+			x2 := x2 + x1;
+			x2 := x2 / 2;
+			x1 := x2;
+			j := j + 1;
+		end   	
+		SquareRoot_result := x2;
+	end
+	 
+	schedule fsm state1 :
+		state1 (set_pa_pb ) 			--> state2;
+		state2 (set_ra_rb_pos ) 		--> state3;
+		state3 (range_int_loop_1) 		--> state6;
+		state3 (range_int_loop_1_done)	--> state7;
+		state6 (__acc__cubic)					--> state5; 
+		state5 (store_ra_results)		--> state3;
+		state7 (range_int_loop_2)		--> state10;
+		state7 (range_int_loop_2_done)	--> state11;
+		state10 (__acc__cubic)					--> state9;
+		state9 (store_rb_results)		--> state7;
+		state11 (set_ba_bb_pos)			--> state12;
+		state12 (beam_int_loop_1)		--> state15;
+		state12 (beam_int_loop_1_done)	--> state16;
+		state15 (__acc__cubic)					--> state14;		
+		state14 (store_ba_results)		--> state12;
+		state16 (beam_int_loop_2)		--> state19;
+		state16 (beam_int_loop_2_done)	--> state20;
+		state19 (__acc__cubic)					--> state18;
+		state18 (store_bb_results)		--> state16;
+		state20 (correlation)			--> state1;
+	end
+	
+	
+	priority
+		range_int_loop_1 > range_int_loop_1_done;
+		range_int_loop_2 > range_int_loop_2_done;
+	end
+ end

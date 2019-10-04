@@ -1,0 +1,175 @@
+/*
+ * Splitter actor to distribute R, G, and B values
+ * of each pixel to the actors which will perform
+ * the convolutions.
+ * 
+ * Author: Suleyman Savas
+ * 2019-02-20
+ * Halmstad University
+ */
+
+
+//package cnnlayer;
+
+actor splitter() ==> float R, float G, float B:
+
+ 	int inputRowSize    = 230; //224 + rowPadding;
+ 	int inputColSize    = 230; //224 + colPadding;
+ 	int numberOfInputChannels = 3;
+ 	int filterRowSize   = 7;
+ 	int filterColSize   = 7;
+ 	int stride          = 2;
+ 	
+ 	int inputRowCounter := 0;
+ 	int inputColCounter := 0;
+ 	int colorIndex      := 0;
+ 	
+ 	int i := 0;
+ 	int j := 0;
+ 	//int counter := 0;
+ 	
+	List(type : List(type : List(type : float, size = inputColSize), size = inputRowSize), size = numberOfInputChannels) inputImage;
+	
+	
+	initSendR : action ==> R:[value]
+	guard (i < filterColSize) and (inputRowCounter + filterRowSize <= inputRowSize) and (inputColCounter = 0)
+	var
+		float value
+	do
+
+		value := inputImage[colorIndex][inputRowCounter + i][j];
+		j := j + 1;
+		if j = filterRowSize then
+			j := 0;
+			i := i + 1;
+		end
+		//counter := counter + 1;
+	end
+	
+	sendR: action ==> R:[value]
+	guard (i < filterColSize) and (inputRowCounter + filterRowSize <= inputRowSize)
+	var
+		float value
+	do
+		//println('sendR');
+		value := inputImage[colorIndex][inputRowCounter + i][inputColCounter + 5 /* filterColSize - stride */ + j];
+		j := j + 1;
+		if j = stride then
+			j := 0;
+			i := i + 1;
+		end
+		//counter := counter + 1;
+	end
+	
+	sendR_done : action ==>
+	guard inputRowCounter + filterRowSize <= inputRowSize
+	do
+		//println('sendR_done');
+		i := 0;
+		j := 0;
+		colorIndex := 1;
+	end
+	
+	initSendG : action ==> G:[value]
+	guard (i < filterColSize) and (inputColCounter = 0)
+	var
+		float value
+	do
+		//println('initSendG');
+		value := inputImage[colorIndex][inputRowCounter + i][inputColCounter + j];
+		j := j + 1;
+		if j = 7 then
+			j := 0;
+			i := i + 1;
+		end
+		//counter := counter + 1;
+	end
+	
+	sendG : action ==> G:[value]
+	guard (i < filterColSize)
+	var
+		float value
+	do
+		//println('sendG');
+		value := inputImage[colorIndex][inputRowCounter + i][inputColCounter + 5 /* filterColSize - stride */ + j];
+		j := j + 1;
+		if j = stride then
+			j := 0;
+			i := i + 1;
+		end
+		//counter := counter + 1;
+	end
+	
+	sendG_done: action ==>
+	do
+		//println('sendG_done');
+		i := 0;
+		j := 0;
+		colorIndex := 2;
+	end
+	
+	initSendB : action ==> B:[value]
+	guard (i < filterColSize) and (inputColCounter = 0)
+	var
+		float value
+	do
+		value := inputImage[colorIndex][inputRowCounter + i][inputColCounter + 5 /* filterColSize - stride */ + j];
+		j := j + 1;
+		if j = 7 then
+			j := 0;
+			i := i + 1;
+		end
+		//counter := counter + 1;
+	end
+	
+	sendB : action ==> B:[value]
+	guard i < filterColSize	
+	var
+		float value
+	do
+		
+		value := inputImage[colorIndex][inputRowCounter + i][inputColCounter + j];
+		j := j + 1;
+		if j = stride then
+			j := 0;
+			i := i + 1;
+		end
+		//counter := counter + 1;
+	end
+	
+	sendB_done: action ==>
+	do
+		
+		i := 0;
+		j := 0;
+		colorIndex := 0;
+		
+		inputColCounter := inputColCounter + stride;
+	 		
+ 		if(inputColCounter + filterColSize > inputColSize) then
+ 			inputColCounter := 0;
+ 			inputRowCounter := inputRowCounter + stride;
+ 			
+		end
+		
+	end
+	
+	
+	schedule fsm state1:
+		state1(initSendR)  --> state1;
+		state1(sendR)      --> state1;
+		state1(sendR_done) --> state2;
+		state2(initSendG)  --> state2;
+		state2(sendG)      --> state2;
+		state2(sendG_done) --> state3;
+		state3(initSendB)  --> state3;
+		state3(sendB)      --> state3;
+		state3(sendB_done) --> state1;
+	end
+
+	priority
+		initSendR > sendR > sendR_done;
+		initSendG > sendG > sendG_done;
+		initSendB > sendB > sendB_done;
+	end	
+end
