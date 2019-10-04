@@ -1,7 +1,7 @@
 Cal2Chisel code generator
 @Author: Süleyman Savas - Halmstad University
 
-Last modification : 2017-08-18
+Last modification : 2019-08-18
 
 
 Some notes on the code generation:
