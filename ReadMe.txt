@@ -1,4 +1,4 @@
-Cal2Chisel code generator
+Cal2Chisel code generator - Eclipse Java project
 @Author: Süleyman Savas - Halmstad University
 
 Last modification : 2019-08-18
