@@ -1,8 +1,9 @@
 Cal2Chisel code generator - Eclipse Java project
-@Author: Süleyman Savas - Halmstad University
+@Author: SÃ¼leyman Savas - Halmstad University
 
 Last modification : 2019-08-18
 
+jUnit4-12.jar file should be added to the path. 
 
 Some notes on the code generation:
 - The action to be accelerator must have a prefix of "__acc__".
